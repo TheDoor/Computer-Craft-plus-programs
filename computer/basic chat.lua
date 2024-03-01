@@ -16,9 +16,8 @@ local function playSound(buffer)
     end
 end
 
-
 -- Open Rednet on the side the modem is attached to
-local modem = peripheral.find("modem")
+-- local modem = peripheral.find("modem")
 if modem then
     rednet.open("left")
     playSound(buffer)

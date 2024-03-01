@@ -1,4 +1,4 @@
-fs.delete("fs.prog")
+fs.delete("prog.lua")
 
 shell.run("pastebin get 3DiEK8DG prog.lua")
 
