@@ -1,3 +1,13 @@
+-- main --
+-- check current position and calibrate orientation
+-- check if located on start block = chest -- the chest should be placed in the left down cornor
+-- check if seeds and hoe in correct slots
+-- start moving forward and harvasting if the crop is mature + planting if harvested do this for a 9*9 area
+-- if slots full go to start position and dump everyting except max one stack of seeds in chest down below
+-- helper varables --
+local farmOriginFilename = "farmOrigin.txt"
+
+
 ---------------------------
 -- Helper math functions --
 ---------------------------
@@ -175,118 +185,23 @@ local function calibrate(initialPosition)
     end
 end
 
--- Function to move to a new target location
-local function moveTo(target, position)
-    -- give some feeedback about the commencing Journey:
-    local directionVector = target - position
-    local distance = magnitude(directionVector)
-    print("You are " .. distance .. " blocks away from the start location. Starting to move to the starting location.")
-    -- Get current location (You need to implement this based on how you track turtle's location)
-    -- Subtract current location from target location
-    local d = target - position
-
-    -- Move in X direction
-    while d.x ~= 0 do
-        if d.x > 0 then
-            if not movePosX() then
-                if not moveUp() then -- If blocked, move up and retry
-                    print("The Path is blocked :-/")
-                else
-                    d.y = d.y - 1
-                end
-            else
-                d.x = d.x - 1
-            end
-        else
-            if not moveNegX() then
-                if not moveUp() then -- If blocked, move up and retry
-                    print("The Path is blocked :-/")
-                else
-                    d.y = d.y - 1
-                end
-            else
-                d.x = d.x + 1
-            end
-        end
-    end
-
-    -- Move in Z direction
-    while d.z ~= 0 do
-        if d.z > 0 then
-            if not movePosZ() then
-                if not moveUp() then -- If blocked, move up and retry
-                    print("The Path is blocked :-/")
-                else
-                    d.y = d.y - 1
-                end
-            else
-                d.z = d.z - 1
-            end
-        else
-            if not moveNegZ() then
-                if not moveUp() then -- If blocked, move up and retry
-                    print("The Path is blocked :-/")
-                else
-                    d.y = d.y - 1
-                end
-            else
-                d.z = d.z + 1
-            end
-        end
-    end
-
-    -- Move in Y direction
-    while d.y ~= 0 do
-        if d.y > 0 then
-            if not moveUp() then
-                -- If blocked, try moving down and retry
-                if not moveDown() then
-                    -- If unable to move down, then something's blocking the way entirely
-                    print("Could not reach the target location.")
-                    return
-                end
-            else
-                d.y = d.y - 1
-            end
-        else
-            if not moveDown() then
-                -- If blocked, try moving up and retry
-                if not moveUp() then
-                    -- If unable to move up, then something's blocking the way entirely
-                    print("Could not reach the target location.")
-                    return
-                end
-            else
-                d.y = d.y + 1
-            end
-        end
-    end
-
-    -- -- Relocate turtle to ground level
-    -- while not turtle.down() do
-    --     -- If unable to move down, something is blocking the way, so keep trying
-    -- end
-
-    print("At start location")
-end
-
 
 -----------------
 -- Helper file --
 -----------------
-local function saveOriginPosition(originPosition)
-    local file = fs.open("start_position.txt", "w") -- Open file in write mode
-    file.writeLine(originPosition.x .. "," .. originPosition.y .. "," .. originPosition.z)
+local function saveOriginPosition(originPosition, orientation)
+    local file = fs.open(farmOriginFilename, "w") -- Open file in write mode
+    file.writeLine(originPosition.x .. "," .. originPosition.y .. "," .. originPosition.z .. "," .. orientation)
     file.close()
 
-    return vector.new(originPosition.x, originPosition.y, originPosition.z)
+    return vector.new(originPosition.x, originPosition.y, originPosition.z), orientation
 end
 
 -- Function to retrieve the starting position from the file
 local function loadOriginPosition()
-    local file = fs.open("start_position.txt", "r") -- Open file in read mode
+    local file = fs.open(farmOriginFilename, "r") -- Open file in read mode
     if not file then
-        return nil                                  -- Return nil if file does not exist
+        return nil                                -- Return nil if file does not exist
     end
     local positionStr = file.readLine()
     file.close()
@@ -296,44 +211,54 @@ local function loadOriginPosition()
         table.insert(parts, tonumber(part))
     end
 
-    return vector.new(parts[1], parts[2], parts[3])
+    return vector.new(parts[1], parts[2], parts[3]), parts[4]
 end
 
--- Function to start the sequence
+
+----------------------
+-- startup sequence --
+----------------------
 local function startSequence(currentPosition)
     print("Startup sequence initiated ...")
-    if fs.exists("start_position.txt") then
-        print("A start location was found")
+    local _, blockDown = turtle.inspectDown()
+    if fs.exists(farmOriginFilename) then
+        print("A farm origin was found")
         return loadOriginPosition()
     else
-        print("No previous start location found")
+        print("No previous farm originfound")
         if currentPosition == nil then
             error("Error: Cannot get GPS position.")
             return false
+        elseif blockDown.name ~= "minecraft:chest" then
+            print(
+            "Place a chest in the left bottom corner of the 9*9 farm and place the turtle facing the top of the farm.")
         else
-            return saveOriginPosition(vector.new(currentPosition.x, currentPosition.y, currentPosition.z)), false
+            return saveOriginPosition(currentPosition, facing), false
         end
     end
 end
 
--- Function for the main logic
+
+----------------
+-- main  loop --
+----------------
 local function main()
     print("we are done for now")
 end
 
--- Loop to execute the main logic
+
+------------------
+-- default loop --
+------------------
+
 local currentPosition = vector.new(gps.locate())
-local originPosition = startSequence(currentPosition)
-if not originPosition then
-    print("Error: Exiting program ...")
-    return -- Exit the program if startSequence failed
-end
 -- Calibrate the turtle's orientation
 calibrate(currentPosition)
-if originPosition == currentPosition then
-    print("You are at the starting location.")
-else
-    moveTo(originPosition, currentPosition)
+
+local farmOrigin = startSequence(currentPosition)
+if not farmOrigin then
+    print("Error: Exiting program ...")
+    return -- Exit the program if startSequence failed
 end
 
 -- while true do
