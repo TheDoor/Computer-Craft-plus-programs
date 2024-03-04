@@ -38,7 +38,7 @@ while true do
         return
     else
         d = waitForGoSignal()
-        if tonumber(d) > 100 then
+        if tonumber(d) >= 160 then
             print("the distance is too far")
             return
         end
