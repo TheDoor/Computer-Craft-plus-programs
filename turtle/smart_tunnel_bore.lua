@@ -354,12 +354,12 @@ local function checkTunnelFormation(facing, minMax, position)
     local horizontal = 0 -- Default horizontal value (middle)
     local vertical = 0   -- Default vertical value (middle)
 
-    if position.y == minMax.min.v then
+    if position.y == minMax.min.v and position.y == minMax.max.v then
+        vertical = 3
+    elseif position.y == minMax.min.v then
         vertical = 2
     elseif position.y == minMax.max.v then
         vertical = 1
-    elseif position.y == minMax.min.v and position.y == minMax.max.v then
-        vertical = 3
     else
         vertical = 0
     end
