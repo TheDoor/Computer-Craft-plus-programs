@@ -207,7 +207,7 @@ local function moveTo(target, position)
             moveDown()
             d.y = d.y + 1
         end
-        if d.x == 0 and d.y == 0 and d.z == 0 do
+        if d.x == 0 and d.y == 0 and d.z == 0 then
             break
         end
     end
@@ -317,7 +317,6 @@ function main()
         print("moving to" .. v[1], v[2], v[3])
 
         local newPosition = vector.new(v[1], v[2], v[3])
-        waitForKey()
         moveTo(currentPosition, newPosition)
         currentPosition = newPosition
     end
