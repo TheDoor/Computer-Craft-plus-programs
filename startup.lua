@@ -1,5 +1,6 @@
 local pastebinId = "LFb8qYrZ"
-local wgeturl = "http://localhost:8080/turtle/smart_tunnel_bore.lua"
+local wgeturl =
+"https://raw.githubusercontent.com/TheDoor/Computer-Craft-plus-programs/main/turtle/smart_tunnel_bore.lua"
 
 -- Function to get a random delay time between requests
 local function getRandomDelay()
