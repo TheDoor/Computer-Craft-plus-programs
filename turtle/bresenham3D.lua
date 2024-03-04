@@ -10,6 +10,7 @@ local facing = nil
 -- Function to move the turtle forward
 local function moveForward(times)
     times = times or 1
+    turtle.dig()
     for _ = 1, times do
         if not turtle.forward() then
             return false -- Return false if movement is obstructed
