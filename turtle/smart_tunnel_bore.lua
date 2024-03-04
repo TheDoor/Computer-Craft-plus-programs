@@ -273,7 +273,7 @@ end
 
 local function turtleArea()
     local startTime = os.clock()
-    local duration = 3 -- Run for 5 seconds
+    local duration = 7 -- Run for 5 seconds
     local endTime = startTime + duration
     local OrientationAndPositionList = {}
     while os.clock() <= endTime do
