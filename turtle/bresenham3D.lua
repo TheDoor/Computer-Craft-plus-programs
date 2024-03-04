@@ -7,29 +7,6 @@ local NEGX = 3 -- Corrected constant name for negative X direction
 -- Define global variable for facing direction
 local facing = nil
 
--- Function to move the turtle forward
-local function moveForward(times)
-    times = times or 1
-    turtle.dig()
-    for _ = 1, times do
-        if not turtle.forward() then
-            return false -- Return false if movement is obstructed
-        end
-    end
-    return true -- Return true if movement is successful
-end
-
--- Function to move the turtle backward
-local function moveBackward(times)
-    times = times or 1
-    for _ = 1, times do
-        if not turtle.back() then
-            return false -- Return false if movement is obstructed
-        end
-    end
-    return true -- Return true if movement is successful
-end
-
 -- Function to turn the turtle right
 local function turnRight(times)
     times = times or 1
@@ -48,13 +25,37 @@ local function turnLeft(times)
     end
 end
 
+-- Function to move the turtle forward
+local function moveForward(times)
+    times = times or 1
+    turtle.dig()
+    for _ = 1, times do
+        if not turtle.forward() then
+            return false -- Return false if movement is obstructed
+        end
+    end
+    return true -- Return true if movement is successful
+end
+
+-- Function to move the turtle backward
+local function moveBackward(times)
+    times = times or 1
+    for _ = 1, times do
+        if not turtle.back() then
+            turnRight(2)
+            turtle.dig()
+            turnLeft(2)
+        end
+    end
+    return true -- Return true if movement is successful
+end
+
 -- Function to move the turtle upward
 local function moveUp(times)
     times = times or 1
     for _ = 1, times do
-        if not turtle.up() then
-            return false -- Return false if movement is obstructed
-        end
+        turtle.digUp()
+        turtle.up()
     end
     return true -- Return true if movement is successful
 end
@@ -63,9 +64,8 @@ end
 local function moveDown(times)
     times = times or 1
     for _ = 1, times do
-        if not turtle.down() then
-            return false -- Return false if movement is obstructed
-        end
+        turtle.digDown()
+        turtle.down()
     end
     return true -- Return true if movement is successful
 end
@@ -166,79 +166,35 @@ local function moveTo(target, position)
     local d = target - position
 
     -- Move in X direction
-    while d.x ~= 0 do
-        if d.x > 0 then
-            if not movePosX() then
-                if not moveUp() then -- If blocked, move up and retry
-                    print("The Path is blocked :-/")
-                else
-                    d.y = d.y - 1
-                end
-            else
-                d.x = d.x - 1
-            end
+    while target ~= position do
+        if d.x == 0 then
+            print("")
+        elseif d.x > 0 then
+            movePosX()
+            d.x = d.x - 1
         else
-            if not moveNegX() then
-                if not moveUp() then -- If blocked, move up and retry
-                    print("The Path is blocked :-/")
-                else
-                    d.y = d.y - 1
-                end
-            else
-                d.x = d.x + 1
-            end
+            moveNegX()
+            d.x = d.x + 1
         end
-    end
 
-    -- Move in Z direction
-    while d.z ~= 0 do
-        if d.z > 0 then
-            if not movePosZ() then
-                if not moveUp() then -- If blocked, move up and retry
-                    print("The Path is blocked :-/")
-                else
-                    d.y = d.y - 1
-                end
-            else
-                d.z = d.z - 1
-            end
+        if d.z == 0 then
+            print("")
+        elseif d.z > 0 then
+            movePosZ()
+            d.z = d.z - 1
         else
-            if not moveNegZ() then
-                if not moveUp() then -- If blocked, move up and retry
-                    print("The Path is blocked :-/")
-                else
-                    d.y = d.y - 1
-                end
-            else
-                d.z = d.z + 1
-            end
+            moveNegZ()
+            d.z = d.z + 1
         end
-    end
 
-    -- Move in Y direction
-    while d.y ~= 0 do
-        if d.y > 0 then
-            if not moveUp() then
-                -- If blocked, try moving down and retry
-                if not moveDown() then
-                    -- If unable to move down, then something's blocking the way entirely
-                    print("Could not reach the target location.")
-                    return
-                end
-            else
-                d.y = d.y - 1
-            end
+        if d.y == 0 then
+            print("")
+        elseif d.y > 0 then
+            moveUp()
+            d.y = d.y - 1
         else
-            if not moveDown() then
-                -- If blocked, try moving up and retry
-                if not moveUp() then
-                    -- If unable to move up, then something's blocking the way entirely
-                    print("Could not reach the target location.")
-                    return
-                end
-            else
-                d.y = d.y + 1
-            end
+            moveDown()
+            d.y = d.y + 1
         end
     end
 
