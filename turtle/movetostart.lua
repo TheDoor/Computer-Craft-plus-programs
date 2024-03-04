@@ -270,7 +270,6 @@ local function moveTo(target, position)
     print("At start location")
 end
 
-
 -----------------
 -- Helper file --
 -----------------
