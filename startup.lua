@@ -1,4 +1,5 @@
 local pastebinId = "LFb8qYrZ"
+local wgeturl = "http://localhost:8080/turtle/smart_tunnel_bore.lua"
 
 -- Function to get a random delay time between requests
 local function getRandomDelay()
@@ -20,7 +21,8 @@ local function downloadScriptFromPastebin()
     fs.delete("prog.lua")
 
     -- Download the script from Pastebin
-    shell.run("pastebin get " .. pastebinId .. " prog.lua")
+    -- shell.run("pastebin get " .. pastebinId .. " prog.lua")
+    shell.run("wget " .. wgeturl .. " prog.lua")
 
     -- Run the script after download
     runScriptAfterDownload()

@@ -1,3 +1,5 @@
+local screenX, screenY = term.getSize()
+
 -- Define constants for cardinal directions
 local NORTH = 0 -- -Z
 local EAST = 1  -- +X
@@ -6,6 +8,7 @@ local WEST = 3  -- -X
 
 -- Define global variable for facing direction
 local facingDirection = nil
+
 
 -- Function to stringify a table
 local function tableToString(tbl)
@@ -29,6 +32,14 @@ local function tableToString(tbl)
     result = result .. "}"
     return result
 end
+
+-- Function to print the contents of a table
+local function printTable(tbl)
+    for key, value in pairs(tbl) do
+        print(key, tableToString(value))
+    end
+end
+
 
 -- Function to compare vectors
 local function compareVectors(a, b)
@@ -91,9 +102,6 @@ end
 -- Function to wait for a start key
 local function waitForKey()
     while true do
-        local x, y = term.getSize()
-        -- term.clear()
-        --  term.setCursorPos(1, y)
         print("Press 'space' to continue")
         local event, key, isHeld = os.pullEvent("key")
         if key == keys.space then
@@ -105,14 +113,13 @@ end
 -- Function to wait for a start key
 local function waitStartKey()
     while true do
-        local x, y = term.getSize()
-        -- term.clear()
-        --  term.setCursorPos(1, y)
+        term.clear()
+        term.setCursorPos(1, screenY)
         print("Press 'space' when all turtles are in position")
         local event, key, isHeld = os.pullEvent("key")
         if key == keys.space then
-            -- term.clear()
-            --  term.setCursorPos(1, y)
+            term.clear()
+            term.setCursorPos(1, screenY)
             print("Starting...")
             sendMessages("calibrate")
             return
@@ -193,6 +200,7 @@ local function checkRectForm(positionList, orientation)
 
     local highestHorizontal, lowestHorizontal, highestVertical, lowestVertical, constant
 
+
     if orientation == 0 or orientation == 2 then
         highestHorizontal, lowestHorizontal = highestX, lowestX
         highestVertical, lowestVertical = highestY, lowestY
@@ -205,37 +213,26 @@ local function checkRectForm(positionList, orientation)
         error("The orientaion is not a correct value")
     end
 
-    -- print("Position list size:", #positionList)
-
-    -- -- Print the values used for calculation
-    -- print("highestHorizontal:", highestHorizontal)
-    -- print("lowestHorizontal:", lowestHorizontal)
-    -- print("highestVertical:", highestVertical)
-    -- print("lowestVertical:", lowestVertical)
-    -- print("constant:", constant)
-    -- print("Orientation:", orientation)
-
 
     print("the rectangle is " ..
         math.abs(highestHorizontal - lowestHorizontal) + 1 ..
         " blocks wide and " .. math.abs(highestVertical - lowestVertical) + 1 .. " blocks tall")
-
 
     for horizontal = lowestHorizontal, highestHorizontal do
         for vertical = lowestVertical, highestVertical do
             local found = false
             for positionListKey, realPos in pairs(positionList) do
                 if orientation == 0 or orientation == 2 then
-                    if horizontal == realPos.z and vertical == realPos.y and constant == realPos.x then
+                    if horizontal == realPos.x and vertical == realPos.y and constant == realPos.z then
                         positionList[positionListKey] = nil
                         found = true
-                        print("we found a match for: " .. horizontal, vertical, constant)
+                        -- print("we found a match for: " .. horizontal, vertical, constant)
                         break
                     end
                 elseif orientation == 1 or orientation == 3 then
-                    if horizontal == realPos.x and vertical == realPos.y and constant == realPos.z then
+                    if horizontal == realPos.z and vertical == realPos.y and constant == realPos.x then
                         positionList[positionListKey] = nil
-                        print("we found a match for: " .. horizontal, vertical, constant)
+                        -- print("we found a match for: " .. constant, vertical, horizontal)
                         found = true
                         break
                     end
@@ -246,7 +243,6 @@ local function checkRectForm(positionList, orientation)
             end
         end
     end
-    waitForKey()
     return next(positionList) == nil,
         { min = { h = lowestHorizontal, v = lowestVertical }, max = { h = highestHorizontal, v = highestVertical } } -- All generated positions were found in real positions
 end
@@ -262,7 +258,6 @@ local function checkIfArea(OrientationAndPositionList)
         positions[id] = data.position
         print(data.position.x, data.position.y, data.position.z, data.orientation)
     end
-    waitForKey()
 
     print("check if the orientation is the same")
     local orientationEqual, mainOrientation = compareOrientations(orientations)
@@ -281,10 +276,9 @@ local function turtleArea()
     local duration = 3 -- Run for 5 seconds
     local endTime = startTime + duration
     local OrientationAndPositionList = {}
-    local x, y = term.getSize()
     while os.clock() <= endTime do
-        -- term.clear()
-        --  term.setCursorPos(1, y)
+        term.clear()
+        term.setCursorPos(1, screenY)
         print("Waiting " .. math.floor(endTime - os.clock()) .. "s for all turtles to send there location")
         local senderId, message = rednet.receive("BorInc", 0) -- Use 0 as the timeout for non-blocking receive
         if senderId then
@@ -296,36 +290,62 @@ local function turtleArea()
     end
 
     -- After the specified duration, check if it's an area
-    -- term.clear()
-    --  term.setCursorPos(1, y)
+    term.clear()
+    term.setCursorPos(1, screenY)
     print("Checking if turtles are in a rectangular formation")
     return checkIfArea(OrientationAndPositionList)
 end
 
 local function inputDistance(minMax, mainOrientation)
-    -- term.clear()
-    --  term.setCursorPos(1, y)
-    print("How far do you want to dig?")
-    local message = read()
-    sendMessages({ command = "digydigyhole", distance = message, minMax = minMax, mainOrientation = mainOrientation })
+    term.clear()
+    term.setCursorPos(1, screenY)
+    print("How far do you want to dig? (max 160 blocks)")
+
+    local distance = tonumber(read())    -- Attempt to convert input to a number
+
+    if distance and distance <= 160 then -- Check if input is a number and within range
+        -- Package the values into a table
+        local message = {
+            command = "digydigyhole"
+        }
+
+        -- Check if distance is not nil before adding it to the message
+        if distance ~= nil then
+            message.distance = distance
+        end
+
+        -- Check if minMax is not nil before adding it to the message
+        if minMax ~= nil then
+            message.minMax = minMax
+        end
+
+        -- Check if mainOrientation is not nil before adding it to the message
+        if mainOrientation ~= nil then
+            message.mainOrientation = mainOrientation
+        end
+        sendMessages(message)
+    elseif not distance then -- If input is not a number
+        print("Invalid input. Please enter a number.")
+        os.sleep(3)
+        inputDistance(minMax, mainOrientation) -- Retry input
+    else                                       -- If input is out of range
+        print("The input is too far. Please enter a number less than or equal to 160.")
+        os.sleep(3)
+        inputDistance(minMax, mainOrientation) -- Retry input
+    end
 end
+
 
 -- Wait for a signal from the pocket computer with the distance
 local function waitForGoSignal()
+    term.clear()
+    term.setCursorPos(1, screenY - 1)
     print("Waiting for go signal...")
     while true do
         local _, message, _ = rednet.receive("BorInc")
         if message.command == "digydigyhole" then
-            break
+            return message
         end
-    end
-    local distance = tonumber(message.distance)
-    if distance and distance <= 160 then
-        print("Received go signal! Starting mining operation for " .. distance .. " blocks.")
-        return message
-    else
-        print("Received invalid distance. Waiting again...")
-        waitForGoSignal() -- Wait again if the distance is invalid
     end
 end
 
@@ -336,40 +356,40 @@ local function checkTunnelFormation(facing, minMax, position)
 
     if position.y == minMax.min.v then
         vertical = 2
-    elseif position.y == minMax.max.y then
+    elseif position.y == minMax.max.v then
         vertical = 1
     else
         vertical = 0
     end
 
     if facing == 0 then
-        if position.x == minMax.min.v then
+        if position.x == minMax.min.h then
             horizontal = 1
-        elseif position.x == minMax.max.y then
+        elseif position.x == minMax.max.h then
             horizontal = 2
         else
             horizontal = 0
         end
     elseif facing == 1 then
-        if position.z == minMax.min.v then
+        if position.z == minMax.min.h then
             horizontal = 1
-        elseif position.z == minMax.max.y then
+        elseif position.z == minMax.max.h then
             horizontal = 2
         else
             horizontal = 0
         end
     elseif facing == 2 then
-        if position.x == minMax.max.v then
+        if position.x == minMax.max.h then
             horizontal = 1
-        elseif position.x == minMax.min.y then
+        elseif position.x == minMax.min.h then
             horizontal = 2
         else
             horizontal = 0
         end
     elseif facing == 3 then
-        if position.z == minMax.max.v then
+        if position.z == minMax.max.h then
             horizontal = 1
-        elseif position.z == minMax.min.y then
+        elseif position.z == minMax.min.h then
             horizontal = 2
         else
             horizontal = 0
@@ -379,7 +399,8 @@ local function checkTunnelFormation(facing, minMax, position)
     end
 
     -- Assign values to pair
-    pair = { horizontal, vertical }
+    pair.h = horizontal
+    pair.v = vertical
 
     return pair
 end
@@ -402,77 +423,81 @@ local function digTunnel(distance, minMax, mainOrientation, position)
     -- check current position and calculate the end position based on the message.distance and facing value
     local pair = checkTunnelFormation(mainOrientation, minMax, position)
     local destinationPosition = calculateDestinationPostion(mainOrientation, position, distance)
-    if pair == { h = 0, v = 0 } then
-        os.setComputerLabel("Middle_Miner")
-        print("This is a middle miner")
-        if vector.new(gps.location) ~= destinationPosition then
-            turtle.dig()
-            turtle.forward()
+    print(pair.h, pair.v)
+    while destinationPosition ~= vector.new(gps.locate()) do
+        if pair.h == 0 and pair.v == 0 then
+            os.setComputerLabel("Middle_Miner")
+            print("This is a middle miner")
+            if vector.new(gps.location) ~= destinationPosition then
+                turtle.dig()
+                turtle.forward()
+            end
+        elseif pair.h == 1 and pair.v == 0 then
+            os.setComputerLabel("Left_Middle_Miner")
+            print("This is a left middle miner")
+            if vector.new(gps.location) ~= destinationPosition then
+                turtle.dig()
+                turtle.forward()
+            end
+        elseif pair.h == 2 and pair.v == 0 then
+            os.setComputerLabel("Right_Middle_Miner")
+            print("This is a right middle miner")
+            if vector.new(gps.location) ~= destinationPosition then
+                turtle.dig()
+                turtle.forward()
+            end
+        elseif pair.h == 0 and pair.v == 1 then
+            os.setComputerLabel("Top_Miner")
+            print("This is a top miner")
+            if vector.new(gps.location) ~= destinationPosition then
+                turtle.dig()
+                turtle.forward()
+            end
+        elseif pair.h == 1 and pair.v == 1 then
+            os.setComputerLabel("Left_Top_Miner")
+            print("This is a left top miner")
+            if vector.new(gps.location) ~= destinationPosition then
+                turtle.dig()
+                turtle.forward()
+            end
+        elseif pair.h == 2 and pair.v == 1 then
+            os.setComputerLabel("Right_Top_Miner")
+            print("This is a right top miner")
+            if vector.new(gps.location) ~= destinationPosition then
+                turtle.dig()
+                turtle.forward()
+            end
+        elseif pair.h == 0 and pair.v == 2 then
+            os.setComputerLabel("Middle_Bottom_Miner")
+            print("This is a Bottom miner")
+            if vector.new(gps.location) ~= destinationPosition then
+                turtle.dig()
+                turtle.forward()
+            end
+        elseif pair.h == 1 and pair.v == 2 then
+            os.setComputerLabel("Left_Bottom_Miner")
+            print("This is a left Bottom miner")
+            if vector.new(gps.location) ~= destinationPosition then
+                turtle.dig()
+                turtle.forward()
+            end
+        elseif pair.h == 2 and pair.v == 2 then
+            os.setComputerLabel("Right_Bottom_Miner")
+            print("This is a right Bottom miner")
+            if vector.new(gps.location) ~= destinationPosition then
+                turtle.dig()
+                turtle.forward()
+            end
+        else
+            waitForKey()
+            error("something went wrong assigning the position in the tunnel formation")
         end
-    elseif pair == { h = 1, v = 0 } then
-        os.setComputerLabel("Left_Middle_Miner")
-        print("This is a left middle miner")
-        if vector.new(gps.location) ~= destinationPosition then
-            turtle.dig()
-            turtle.forward()
-        end
-    elseif pair == { h = 2, v = 0 } then
-        os.setComputerLabel("Right_Middle_Miner")
-        print("This is a right middle miner")
-        if vector.new(gps.location) ~= destinationPosition then
-            turtle.dig()
-            turtle.forward()
-        end
-    elseif pair == { h = 0, v = 1 } then
-        os.setComputerLabel("Top_Miner")
-        print("This is a top miner")
-        if vector.new(gps.location) ~= destinationPosition then
-            turtle.dig()
-            turtle.forward()
-        end
-    elseif pair == { h = 1, v = 1 } then
-        os.setComputerLabel("Left_Top_Miner")
-        print("This is a left top miner")
-        if vector.new(gps.location) ~= destinationPosition then
-            turtle.dig()
-            turtle.forward()
-        end
-    elseif pair == { h = 2, v = 1 } then
-        os.setComputerLabel("Right_Top_Miner")
-        print("This is a right top miner")
-        if vector.new(gps.location) ~= destinationPosition then
-            turtle.dig()
-            turtle.forward()
-        end
-    elseif pair == { h = 0, v = 2 } then
-        os.setComputerLabel("Bottom")
-        print("This is a Bottom miner")
-        if vector.new(gps.location) ~= destinationPosition then
-            turtle.dig()
-            turtle.forward()
-        end
-    elseif pair == { h = 1, v = 2 } then
-        os.setComputerLabel("Bottom")
-        print("This is a left Bottom miner")
-        if vector.new(gps.location) ~= destinationPosition then
-            turtle.dig()
-            turtle.forward()
-        end
-    elseif pair == { h = 2, v = 2 } then
-        os.setComputerLabel("Bottom")
-        print("This is a right Bottom miner")
-        if vector.new(gps.location) ~= destinationPosition then
-            turtle.dig()
-            turtle.forward()
-        end
-    else
-        error("something went wrong assigning the position in the tunnel formation")
     end
 end
 -- Main function for running turtle script
 local function runTurtleScript()
-    -- term.clear()
-    --  term.setCursorPos(1, 1)
+    term.clear()
+    term.setCursorPos(1, 1)
     connectRednet("left")
     waitForCalibrate()
     local currentLocation = vector.new(gps.locate());
@@ -490,17 +515,16 @@ end
 
 -- Main function for running pocket computer script
 local function runPadScript()
-    -- term.clear()
-    --  term.setCursorPos(1, 1)
+    term.clear()
+    term.setCursorPos(1, 1)
     connectRednet("back")
     waitStartKey()
-    print("Detecting area")
     local isArea, minMax, mainOrientation = turtleArea()
     if not isArea then
         return
     end
-    print("Waiting for input")
     inputDistance(minMax, mainOrientation)
+    waitForKey()
     -- Implement the rest of the functionality for the pocket computer script here
 end
 
