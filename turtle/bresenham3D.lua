@@ -168,7 +168,7 @@ local function moveTo(target, position)
     -- Move in X direction
     while target ~= position do
         if d.x == 0 then
-            print("")
+            print("dx 0")
         elseif d.x > 0 then
             movePosX()
             d.x = d.x - 1
@@ -178,7 +178,7 @@ local function moveTo(target, position)
         end
 
         if d.z == 0 then
-            print("")
+            print("dz 0")
         elseif d.z > 0 then
             movePosZ()
             d.z = d.z - 1
@@ -188,7 +188,7 @@ local function moveTo(target, position)
         end
 
         if d.y == 0 then
-            print("")
+            print("dy 0")
         elseif d.y > 0 then
             moveUp()
             d.y = d.y - 1
