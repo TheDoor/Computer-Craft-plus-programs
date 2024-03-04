@@ -152,7 +152,6 @@ local function calibrate(initialPosition)
                 facing = NEGZ
             end
             turtle.forward()
-
             break
         else
             error("movement is obstructed")
@@ -347,8 +346,10 @@ function main()
     local ListOfPoints = Bresenham3D(x1, y1, z1, x2, y2, z2)
     local currentPosition = vector.new(x1, y1, z1)
     calibrate(currentPosition)
+    print("Starting to move along line")
     for i, v in ipairs(ListOfPoints) do
         -- move to next point
+        print("moving to" .. v[1], v[2], v[3])
         local newPosition = vector.new(v[1], v[2], v[3])
         moveTo(currentPosition, newPosition)
         currentPosition = newPosition
