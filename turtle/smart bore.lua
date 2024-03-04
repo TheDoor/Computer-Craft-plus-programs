@@ -1,14 +1,11 @@
--- local receivedMessagesList = {}
-
 -- Define constants for cardinal directions
-local NEGZ = 0
-local POSX = 1
-local POSZ = 2
-local NEGX = 3 -- Corrected constant name for negative X direction
+local NORTH = 0
+local EAST = 1
+local SOUTH = 2
+local WEST = 3
 
 -- Define global variable for facing direction
-local facing = nil
-
+local facingDirection = nil
 
 -- Function to stringify a table
 local function tableToString(tbl)
@@ -33,76 +30,64 @@ local function tableToString(tbl)
     return result
 end
 
--- Define a custom comparison function
+-- Function to compare vectors
 local function compareVectors(a, b)
-    -- Compare based on the x component first
     if a.x ~= b.x then
         return a.x < b.x
-    end
-    -- If x components are equal, compare based on y component
-    if a.y ~= b.y then
+    elseif a.y ~= b.y then
         return a.y < b.y
-    end
-    -- If x and y components are equal, compare based on z component
-    return a.z < b.z
-end
-
-local function compareOrientations(tableOfTables)
-    -- probleem is de tabel zelf, deze wordt fout aangemaakt
-    if #tableOfTables <= 1 then
-        -- If there is only one or no elements, orientations are considered equal
-
-        -- Get the orientation of the first inner table
-        local referenceID = next(tableOfTables) -- Get the first key and its value
-        local referenceOrientation = tableOfTables[referenceID].orientation
-        print("1 turtle is facing the same direction" .. referenceOrientation)
-        return true
-    end
-
-    -- Get the orientation of the first inner table
-    local referenceID = next(tableOfTables) -- Get the first key and its value
-    local referenceOrientation = tableOfTables[referenceID].orientation
-
-    -- Compare the orientation of each inner table with the reference orientation
-    for id in pairs(tableOfTables) do
-        print(tableOfTables[id].orientation)
-        if tableOfTables[id].orientation ~= referenceOrientation then
-            -- If any orientation is different, print a message and return false
-            print("Not all turtles are facing the same direction")
-            return false
-        end
-    end
-
-    -- If all orientations are the same, print a message and return true
-    print("All turtles are facing the same direction")
-    return true
-end
-
--- Screen update function
-local function listCoordinates(list, orientation)
-    local x, y = term.getSize()
-    term.clear()
-    term.setCursorPos(1, 1)
-    for i, receivedMessage in pairs(list) do
-        if receivedMessage ~= nil then
-            print("turtle[" .. i .. "]: " .. tableToString(receivedMessage))
-        end
-    end
-    term.setCursorPos(1, y)
-    -- Check the boolean value and print messages accordingly
-    if orientation then
-        print("all turtles are facing the same direction")
     else
-        print("all turtles are NOT facing the same direction")
+        return a.z < b.z
     end
 end
 
--- Function to receive messages and print them
-local function receiveMessages()
-    while true do
-        local senderId, message, protocol = rednet.receive("BorInc")
-        return message
+-- Function to find the highest X, Z, and Y values among a list of position tables
+local function findHighestValues(positionList)
+    local highestX = -math.huge
+    local highestZ = -math.huge
+    local highestY = -math.huge
+
+    for _, position in pairs(positionList) do
+        if position.x > highestX then
+            highestX = position.x
+        end
+        if position.z > highestZ then
+            highestZ = position.z
+        end
+        if position.y > highestY then
+            highestY = position.y
+        end
     end
+
+    return highestX, highestY, highestZ
+end
+
+-- Function to find the lowest X, Z, and Y values among a list of position tables
+local function findLowestValues(positionList)
+    local lowestX = math.huge
+    local lowestZ = math.huge
+    local lowestY = math.huge
+
+    for _, position in pairs(positionList) do
+        if position.x < lowestX then
+            lowestX = position.x
+        end
+        if position.z < lowestZ then
+            lowestZ = position.z
+        end
+        if position.y < lowestY then
+            lowestY = position.y
+        end
+    end
+
+    return lowestX, lowestY, lowestZ
+end
+
+
+-- Function to receive messages
+local function receiveMessages()
+    local senderId, message, protocol = rednet.receive("BorInc")
+    return message
 end
 
 -- Function to send messages
@@ -110,41 +95,49 @@ local function sendMessages(message)
     rednet.broadcast(message, "BorInc")
 end
 
--- Function to send messages
-local function waitAndsendMessages()
+-- Function to wait for a start key
+local function waitForKey()
     while true do
-        local message = read()
-        rednet.broadcast(message, "BorInc")
+        local x, y = term.getSize()
+        -- term.clear()
+        -- term.setCursorPos(1, y)
+        -- print("Press 'space' when all turtles are in position")
+        local event, key, isHeld = os.pullEvent("key")
+        if key == keys.space then
+            return
+        end
     end
 end
 
--- check for start key "space"
+-- Function to wait for a start key
 local function waitStartKey()
     while true do
         local x, y = term.getSize()
-        term.clear()
-        term.setCursorPos(1, y)
-        print("press 'space' when all turtles are in position")
+        -- term.clear()
+        -- term.setCursorPos(1, y)
+        -- print("Press 'space' when all turtles are in position")
         local event, key, isHeld = os.pullEvent("key")
         if key == keys.space then
-            term.clear()
-            term.setCursorPos(1, y)
-            print("starting ...")
+            -- term.clear()
+            -- term.setCursorPos(1, y)
+            -- print("Starting...")
             sendMessages("calibrate")
             return
         end
     end
 end
+
 -- Function to connect to Rednet and handle messages
 local function connectRednet(side)
     rednet.open(side)
 end
 
+-- Function to wait for calibrate signal
 local function waitForCalibrate()
     while true do
         local _, message, _ = rednet.receive("BorInc")
         if message == "calibrate" then
-            print("Start calibrating turtles")
+            -- print("Start calibrating turtles")
             return
         end
     end
@@ -152,24 +145,24 @@ end
 
 -- Function to calibrate the turtle's movements
 local function calibrate(initialPosition)
-    print("callibrating the orientation of this turtle")
-    -- Attempt to move back until the turtle returns to the initial position
+    -- print("Calibrating the orientation of this turtle...")
+
     while true do
         if turtle.back() then
             local currentPosition = vector.new(gps.locate())
             local directionVector = currentPosition - initialPosition
+
             if directionVector.x < 0 then
-                facing = POSX
+                facingDirection = EAST
             elseif directionVector.x > 0 then
-                facing = NEGX
+                facingDirection = WEST
             elseif directionVector.z < 0 then
-                facing = POSZ
+                facingDirection = SOUTH
             elseif directionVector.z > 0 then
-                facing = NEGZ
+                facingDirection = NORTH
             end
 
             turtle.forward()
-
             break
         else
             error("Please remove all blocks behind this turtle")
@@ -177,76 +170,163 @@ local function calibrate(initialPosition)
     end
 end
 
---CHeck if turtles are in a rectangle formation
-local function checkIfArea(positionList)
-    local orientation = compareOrientations(positionList)
-    -- print(tableToString(positionList))
-    -- listCoordinates(positionList, orientation)
-    return false
+-- Function to retrieve the value associated with the first key in a table
+local function getFirstValue(tableWithNumbers)
+    for id, value in pairs(tableWithNumbers) do
+        return value -- Return the value associated with the first key encountered
+    end
 end
 
--- Wait for all turtles to send message
+-- Function to compare orientations
+local function compareOrientations(orientations)
+    local referenceOrientation = getFirstValue(orientations)
+
+    for _, orientation in ipairs(orientations) do
+        if orientation ~= referenceOrientation then
+            return false
+        end
+    end
+
+    return true, referenceOrientation
+end
+
+local function checkRectForm(positionList, orientation)
+    if not positionList or orientation == nil then
+        error("we are missing avalue for the orientation or position")
+    end
+    local highestX, highestY, highestZ = findHighestValues(positionList)
+    local lowestX, lowestY, lowestZ = findLowestValues(positionList)
+
+    local highestHorizontal, lowestHorizontal, highestVertical, lowestVertical, constant
+
+    if orientation == 0 or orientation == 2 then
+        highestHorizontal, lowestHorizontal = highestX, lowestX
+        highestVertical, lowestVertical = highestY, lowestY
+        constant = highestZ
+    elseif orientation == 1 or orientation == 3 then
+        highestHorizontal, lowestHorizontal = highestZ, lowestZ
+        highestVertical, lowestVertical = highestY, lowestY
+        constant = highestX
+    else
+        error("The orientaion is not a correct value")
+    end
+
+    print("Position list size:", #positionList)
+
+    -- Print the values used for calculation
+    print("highestHorizontal:", highestHorizontal)
+    print("lowestHorizontal:", lowestHorizontal)
+    print("highestVertical:", highestVertical)
+    print("lowestVertical:", lowestVertical)
+    print("constant:", constant)
+    print("Orientation:", orientation)
+
+
+    print("the rectangle is " ..
+        math.abs(highestHorizontal - lowestHorizontal) + 1 ..
+        " blocks wide and " .. math.abs(highestVertical - lowestVertical) + 1 .. " blocks tall")
+
+
+    for horizontal = lowestHorizontal, highestHorizontal do
+        for vertical = lowestVertical, highestVertical do
+            local found = false
+            for _, realPos in ipairs(positionList) do
+                print(realPos.x, realPos.y, realPos.z)
+                if orientation == 1 or orientation == 3 then
+                    if horizontal == realPos.z and vertical == realPos.y and constant == realPos.x then
+                        found = true
+                        break
+                    end
+                elseif orientation == 2 or orientation == 4 then
+                    if horizontal == realPos.x and vertical == realPos.y and constant == realPos.z then
+                        found = true
+                        break
+                    end
+                end
+            end
+            if not found then
+                return false -- If any generated position is not found in real positions, return false
+            end
+        end
+    end
+    return true -- All generated positions were found in real positions
+end
+
+
+-- Function to check if turtles are in a rectangle formation
+local function checkIfArea(OrientationAndPositionList)
+    local orientations = {}
+    local positions = {}
+
+    -- Iterate through the OrientationAndPositionList table
+    for id, data in pairs(OrientationAndPositionList) do
+        orientations[id] = data.orientation
+        positions[id] = data.position
+        print(data.position.x, data.position.y, data.position.z, data.orientation)
+    end
+    waitForKey()
+
+    print("check if the orientation is the same")
+    local orientationEqual, mainOrientation = compareOrientations(orientations)
+
+    print("check if the area is a complete rectangle")
+    local FormationRect = checkRectForm(positions, mainOrientation)
+
+    if FormationRect == false then
+        -- print("still not an area")
+    end
+
+    return orientationEqual
+end
+
+
 local function turtleArea()
-    -- Example condition
-    local isArea = false
-    local positionList = {}
+    local startTime = os.clock()
+    local duration = 5 -- Run for 5 seconds
+    local endTime = startTime + duration
+    local OrientationAndPositionList = {}
 
-    while not isArea do
-        local senderId, message, protocol = rednet.receive("BorInc")
-        positionList[senderId] = message
-        isArea = checkIfArea(positionList)
+    while os.clock() <= endTime do
+        local senderId, message = rednet.receive("BorInc", 0) -- Use 0 as the timeout for non-blocking receive
+        if senderId then
+            print("Received a message")
+            OrientationAndPositionList[senderId] = message
+        end
+        if os.clock() > endTime then
+            break -- Break out of the loop if time exceeds duration
+        end
     end
+
+    -- After the specified duration, check if it's an area
+    checkIfArea(OrientationAndPositionList)
 end
 
--- Run this program in two modes: one for the pocket computer to send signals to the turtle, the other is the mode for the turtles
+
+
+-- Main function for running turtle script
 local function runTurtleScript()
-    -- make a rednet connection
     connectRednet("left")
-    -- wait for calibrate signal send via a pocket computer
     waitForCalibrate()
-    -- start callibrating process:
-    -- do location
     local currentLocation = vector.new(gps.locate());
+
     if currentLocation == nil then
-        error("No gps connection, please check of your system is setup correct.")
+        error("No GPS connection, please check if your system is set up correctly.")
     end
-    -- find orientation by moving backwards
+
     calibrate(currentLocation)
-    -- send location, orientation and ID and recieve all other messages
-    sendMessages({ orientation = facing, position = currentLocation })
+    print("sending message")
+    sendMessages({ orientation = facingDirection, position = currentLocation })
 end
 
--- Run this program in two modes: one for the pocket computer to send signals to the turtle, the other is the mode for the turtles
+-- Main function for running pocket computer script
 local function runPadScript()
     connectRednet("back")
     waitStartKey()
     turtleArea()
-    -- save all recieved message in a table and sort them based on the coordinates
-    -- table.sort(vectors, compareVectors)
-    -- check if orientation is the same
-    -- check the X and Z coordinates and look for the group that has the same value and check if that is correct with the orientation.
-    -- Check if turtles are setup correctly
-    -- sort the table of coordiantes form largest to smallest X or Z with Y secondary,
-    --Take the largest X or Z and the smallest do the same for Y
-    -- Make a for loop from smallest to large X or Z and in that loop make one for Y
-    -- Check if all generated coordiantes are in the table
-    -- exit with error if not
-    -- contuniue if OK
-
-    -- Assign every turtle a correct mining mode
-    -- if largest turtle has largest X or Z then is left or right depending on orientation
-    -- send number for mining mode
-    -- if largest turtle has smallest X or Z then is left or right depending on orientation
-    -- if largest turtle has largest Y value then is top
-    -- if largest turtle has smallest Y value then is bottom
-    -- if large X and large Y is corner
-    -- ...
-    -- if niether it is in the middle
-
-    -- print me a text that says how manu turtle there are and the dimensions of the area they cover. Tell me what way they are facing +X, -X +Z -Z
+    -- Implement the rest of the functionality for the pocket computer script here
 end
 
--- Run this program in two modes: one for the pocket computer to send signals to the turtle, the other is the mode for the turtles
+-- Function to determine the type of device
 local function getDeviceType()
     if turtle then
         return "turtle"
@@ -259,19 +339,27 @@ local function getDeviceType()
     end
 end
 
+-- Main function
 local function main()
-    local dt = getDeviceType()
-    if dt == "turtle" then
-        print("This is a turtle")
-        runTurtleScript()
-    elseif dt == "computer" or dt == "command_computer" then
-        print("This is a computer, it is recommended to use a pocket computer")
-        runPadScript()
-    elseif dt == "pocket" then
-        print("This is a pocket computer")
-        runPadScript()
+    local deviceType = getDeviceType()
+
+    if deviceType == "turtle" then
+        -- print("This is a turtle")
+        while true do
+            runTurtleScript()
+        end
+    elseif deviceType == "computer" or deviceType == "command_computer" then
+        -- print("This is a computer. It is recommended to use a pocket computer.")
+        while true do
+            runPadScript()
+        end
+    elseif deviceType == "pocket" then
+        -- print("This is a pocket computer")
+        while true do
+            runPadScript()
+        end
     end
 end
 
-
+-- Run the main function
 main()
