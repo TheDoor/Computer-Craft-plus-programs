@@ -419,6 +419,19 @@ local function calculateDestinationPostion(mainOrientation, position, distance)
     end
 end
 
+local function itemToFirstSlot()
+    turtle.drop()
+    for i = 2, 16, 1 do
+        turtle.select(i)
+        if turtle.transferTo(1) then
+            turtle.select(1)
+            print("Selecting new buildingblock")
+            return true
+        end
+    end
+    return false
+end
+
 local function digTunnel(distance, minMax, mainOrientation, position)
     -- check current position and calculate the end position based on the message.distance and facing value
     local pair = checkTunnelFormation(mainOrientation, minMax, position)
@@ -437,6 +450,15 @@ local function digTunnel(distance, minMax, mainOrientation, position)
             print("This is a left middle miner")
             if vector.new(gps.location) ~= destinationPosition then
                 turtle.dig()
+                turtle.turnLeft()
+                if turtle.place() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                turtle.turnRight()
                 turtle.forward()
             end
         elseif pair.h == 2 and pair.v == 0 then
@@ -444,6 +466,15 @@ local function digTunnel(distance, minMax, mainOrientation, position)
             print("This is a right middle miner")
             if vector.new(gps.location) ~= destinationPosition then
                 turtle.dig()
+                turtle.turnRight()
+                if turtle.place() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                turtle.turnLeft()
                 turtle.forward()
             end
         elseif pair.h == 0 and pair.v == 1 then
@@ -451,6 +482,13 @@ local function digTunnel(distance, minMax, mainOrientation, position)
             print("This is a top miner")
             if vector.new(gps.location) ~= destinationPosition then
                 turtle.dig()
+                if turtle.placeUp() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
                 turtle.forward()
             end
         elseif pair.h == 1 and pair.v == 1 then
@@ -458,6 +496,22 @@ local function digTunnel(distance, minMax, mainOrientation, position)
             print("This is a left top miner")
             if vector.new(gps.location) ~= destinationPosition then
                 turtle.dig()
+                turtle.turnLeft()
+                if turtle.place() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                if turtle.placeUp() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                turtle.turnRight()
                 turtle.forward()
             end
         elseif pair.h == 2 and pair.v == 1 then
@@ -465,6 +519,22 @@ local function digTunnel(distance, minMax, mainOrientation, position)
             print("This is a right top miner")
             if vector.new(gps.location) ~= destinationPosition then
                 turtle.dig()
+                turtle.turnRight()
+                if turtle.place() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                if turtle.placeUp() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                turtle.turnLeft()
                 turtle.forward()
             end
         elseif pair.h == 0 and pair.v == 2 then
@@ -472,6 +542,13 @@ local function digTunnel(distance, minMax, mainOrientation, position)
             print("This is a Bottom miner")
             if vector.new(gps.location) ~= destinationPosition then
                 turtle.dig()
+                if turtle.placeDown() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
                 turtle.forward()
             end
         elseif pair.h == 1 and pair.v == 2 then
@@ -479,6 +556,22 @@ local function digTunnel(distance, minMax, mainOrientation, position)
             print("This is a left Bottom miner")
             if vector.new(gps.location) ~= destinationPosition then
                 turtle.dig()
+                turtle.turnRight()
+                if turtle.place() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                if turtle.placeUp() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                turtle.turnLeft()
                 turtle.forward()
             end
         elseif pair.h == 2 and pair.v == 2 then
@@ -486,6 +579,22 @@ local function digTunnel(distance, minMax, mainOrientation, position)
             print("This is a right Bottom miner")
             if vector.new(gps.location) ~= destinationPosition then
                 turtle.dig()
+                turtle.turnLeft()
+                if turtle.place() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                if turtle.placeDown() == false then
+                    if turtle.getItemCount() == 0 then
+                        if itemToFirstSlot() == false then
+                            debug("No building blocks")
+                        end
+                    end
+                end
+                turtle.turnRight()
                 turtle.forward()
             end
         else
