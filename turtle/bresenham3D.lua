@@ -345,11 +345,11 @@ function main()
     local z2 = tonumber(read())
     local ListOfPoints = Bresenham3D(x1, y1, z1, x2, y2, z2)
     local currentPosition = vector.new(x1, y1, z1)
-    calibrate(vector.new(x1, y1, z1))
+    calibrate(currentPosition)
     for i, v in ipairs(ListOfPoints) do
         -- move to next point
         local newPosition = vector.new(v[1], v[2], v[3])
-        moveTo(currentPosition)
+        moveTo(currentPosition, newPosition)
         currentPosition = newPosition
     end
 end
