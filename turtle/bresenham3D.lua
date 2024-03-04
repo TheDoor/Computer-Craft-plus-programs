@@ -88,15 +88,16 @@ end
 function main()
     local x1, y1, z1 = gps.locate()
     print("give x")
-    local x2 = read()
+    local x2 = tonumber(read())
     print("give y")
-    local y2 = read()
+    local y2 = tonumber(read())
     print("give z")
-    local z2 = read()
+    local z2 = tonumber(read())
     local ListOfPoints = Bresenham3D(x1, y1, z1, x2, y2, z2)
     -- calibrate turtle
     for i, v in ipairs(ListOfPoints) do
         -- move to next point
+        print(v[1], v[2], v[3])
     end
 end
 
