@@ -7,6 +7,17 @@ local NEGX = 3 -- Corrected constant name for negative X direction
 -- Define global variable for facing direction
 local facing = nil
 
+-- Function to wait for a start key
+local function waitForKey()
+    while true do
+        print("Press 'space' to continue")
+        local event, key, isHeld = os.pullEvent("key")
+        if key == keys.space then
+            return
+        end
+    end
+end
+
 -- Function to turn the turtle right
 local function turnRight(times)
     times = times or 1
@@ -197,11 +208,6 @@ local function moveTo(target, position)
             d.y = d.y + 1
         end
     end
-
-    -- -- Relocate turtle to ground level
-    -- while not turtle.down() do
-    --     -- If unable to move down, something is blocking the way, so keep trying
-    -- end
 end
 
 function Bresenham3D(x1, y1, z1, x2, y2, z2)
@@ -306,7 +312,9 @@ function main()
     for i, v in ipairs(ListOfPoints) do
         -- move to next point
         print("moving to" .. v[1], v[2], v[3])
+
         local newPosition = vector.new(v[1], v[2], v[3])
+        waitForKey()
         moveTo(currentPosition, newPosition)
         currentPosition = newPosition
     end
