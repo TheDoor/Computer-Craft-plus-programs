@@ -207,6 +207,7 @@ local function moveTo(target, position)
             moveDown()
             d.y = d.y + 1
         end
+        position = vector.new(gps.locate())
     end
 end
 
