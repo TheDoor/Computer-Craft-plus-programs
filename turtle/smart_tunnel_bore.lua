@@ -358,39 +358,49 @@ local function checkTunnelFormation(facing, minMax, position)
         vertical = 2
     elseif position.y == minMax.max.v then
         vertical = 1
+    elseif position.y == minMax.min.v and position.y == minMax.max.v then
+        vertical = 3
     else
         vertical = 0
     end
 
     if facing == 0 then
-        if position.x == minMax.min.h then
-            horizontal = 1
+        if position.x == minMax.max.h and position.x == minMax.min.h then
+            horizontal = 3
         elseif position.x == minMax.max.h then
             horizontal = 2
+        elseif position.x == minMax.min.h then
+            horizontal = 1
         else
             horizontal = 0
         end
     elseif facing == 1 then
-        if position.z == minMax.min.h then
-            horizontal = 1
+        if position.z == minMax.max.h and position.z == minMax.min.h then
+            horizontal = 3
         elseif position.z == minMax.max.h then
             horizontal = 2
+        elseif position.z == minMax.min.h then
+            horizontal = 1
         else
             horizontal = 0
         end
     elseif facing == 2 then
-        if position.x == minMax.max.h then
-            horizontal = 1
+        if position.x == minMax.min.h and position.x == minMax.max.h then
+            horizontal = 3
         elseif position.x == minMax.min.h then
             horizontal = 2
+        elseif position.x == minMax.max.h then
+            horizontal = 1
         else
             horizontal = 0
         end
     elseif facing == 3 then
-        if position.z == minMax.max.h then
-            horizontal = 1
+        if position.z == minMax.min.h and position.z == minMax.max.h then
+            horizontal = 3
         elseif position.z == minMax.min.h then
             horizontal = 2
+        elseif position.z == minMax.max.h then
+            horizontal = 1
         else
             horizontal = 0
         end
@@ -441,164 +451,356 @@ local function digTunnel(distance, minMax, mainOrientation, position)
         if pair.h == 0 and pair.v == 0 then
             os.setComputerLabel("Middle_Miner")
             print("This is a middle miner")
-            if vector.new(gps.location) ~= destinationPosition then
-                turtle.dig()
-                turtle.forward()
-            end
+
+            turtle.dig()
+            turtle.forward()
         elseif pair.h == 1 and pair.v == 0 then
             os.setComputerLabel("Left_Middle_Miner")
             print("This is a left middle miner")
-            if vector.new(gps.location) ~= destinationPosition then
-                turtle.dig()
-                turtle.turnLeft()
-                if turtle.place() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
+
+            turtle.dig()
+            turtle.turnLeft()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
                     end
                 end
-                turtle.turnRight()
-                turtle.forward()
             end
+            turtle.turnRight()
+            turtle.forward()
         elseif pair.h == 2 and pair.v == 0 then
             os.setComputerLabel("Right_Middle_Miner")
             print("This is a right middle miner")
-            if vector.new(gps.location) ~= destinationPosition then
-                turtle.dig()
-                turtle.turnRight()
-                if turtle.place() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
+
+            turtle.dig()
+            turtle.turnRight()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
                     end
                 end
-                turtle.turnLeft()
-                turtle.forward()
             end
+            turtle.turnLeft()
+            turtle.forward()
+        elseif pair.h == 3 and pair.v == 0 then
+            os.setComputerLabel("Right_Left_Middle_Miner")
+            print("This is a right middle miner")
+
+            turtle.dig()
+            turtle.turnRight()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnLeft()
+            turtle.turnLeft()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnRight()
+            turtle.forward()
         elseif pair.h == 0 and pair.v == 1 then
             os.setComputerLabel("Top_Miner")
             print("This is a top miner")
-            if vector.new(gps.location) ~= destinationPosition then
-                turtle.dig()
-                if turtle.placeUp() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
+
+            turtle.dig()
+            if turtle.placeUp() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
                     end
                 end
-                turtle.forward()
             end
+            turtle.forward()
         elseif pair.h == 1 and pair.v == 1 then
             os.setComputerLabel("Left_Top_Miner")
             print("This is a left top miner")
-            if vector.new(gps.location) ~= destinationPosition then
-                turtle.dig()
-                turtle.turnLeft()
-                if turtle.place() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
+
+            turtle.dig()
+            turtle.turnLeft()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
                     end
                 end
-                if turtle.placeUp() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
-                    end
-                end
-                turtle.turnRight()
-                turtle.forward()
             end
+            if turtle.placeUp() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnRight()
+            turtle.forward()
         elseif pair.h == 2 and pair.v == 1 then
             os.setComputerLabel("Right_Top_Miner")
             print("This is a right top miner")
-            if vector.new(gps.location) ~= destinationPosition then
-                turtle.dig()
-                turtle.turnRight()
-                if turtle.place() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
+
+            turtle.dig()
+            turtle.turnRight()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
                     end
                 end
-                if turtle.placeUp() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
-                    end
-                end
-                turtle.turnLeft()
-                turtle.forward()
             end
+            if turtle.placeUp() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnLeft()
+            turtle.forward()
+        elseif pair.h == 3 and pair.v == 1 then
+            os.setComputerLabel("Right_Left_Top_Miner")
+            print("This is a right top miner")
+
+            turtle.dig()
+            turtle.turnRight()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnLeft()
+            turtle.turnLeft()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnRight()
+            if turtle.placeUp() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.forward()
         elseif pair.h == 0 and pair.v == 2 then
             os.setComputerLabel("Middle_Bottom_Miner")
             print("This is a Bottom miner")
-            if vector.new(gps.location) ~= destinationPosition then
-                turtle.dig()
-                if turtle.placeDown() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
+
+            turtle.dig()
+            if turtle.placeDown() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
                     end
                 end
-                turtle.forward()
             end
+            turtle.forward()
         elseif pair.h == 1 and pair.v == 2 then
             os.setComputerLabel("Left_Bottom_Miner")
             print("This is a left Bottom miner")
-            if vector.new(gps.location) ~= destinationPosition then
-                turtle.dig()
-                turtle.turnRight()
-                if turtle.place() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
+
+            turtle.dig()
+            turtle.turnLeft()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
                     end
                 end
-                if turtle.placeUp() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
-                    end
-                end
-                turtle.turnLeft()
-                turtle.forward()
             end
+            if turtle.placeDown() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnRight()
+            turtle.forward()
         elseif pair.h == 2 and pair.v == 2 then
             os.setComputerLabel("Right_Bottom_Miner")
             print("This is a right Bottom miner")
-            if vector.new(gps.location) ~= destinationPosition then
-                turtle.dig()
-                turtle.turnLeft()
-                if turtle.place() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
+
+            turtle.dig()
+            turtle.turnRight()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
                     end
                 end
-                if turtle.placeDown() == false then
-                    if turtle.getItemCount() == 0 then
-                        if itemToFirstSlot() == false then
-                            debug("No building blocks")
-                        end
-                    end
-                end
-                turtle.turnRight()
-                turtle.forward()
             end
+            if turtle.placeDown() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnLeft()
+            turtle.forward()
+        elseif pair.h == 3 and pair.v == 2 then
+            os.setComputerLabel("Right_Left_Bottom_Miner")
+            print("This is a right Bottom miner")
+
+            turtle.dig()
+            turtle.turnRight()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnLeft()
+            turtle.turnLeft()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnRight()
+            if turtle.placeDown() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.forward()
+        elseif pair.h == 0 and pair.v == 3 then
+            os.setComputerLabel("Middle_Top_Bottom_Miner")
+            print("This is a Bottom miner")
+
+            turtle.dig()
+            if turtle.placeDown() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            if turtle.placeUp() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.forward()
+        elseif pair.h == 1 and pair.v == 3 then
+            os.setComputerLabel("Left_Top_Bottom_Miner")
+            print("This is a left Bottom miner")
+
+            turtle.dig()
+            turtle.turnLeft()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnRight()
+            if turtle.placeUp() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            if turtle.placeDown() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.forward()
+        elseif pair.h == 2 and pair.v == 3 then
+            os.setComputerLabel("Right_Top_Bottom_Miner")
+            print("This is a right Bottom miner")
+
+            turtle.dig()
+            turtle.turnRight()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnLeft()
+            if turtle.placeUp() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            if turtle.placeDown() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.forward()
+        elseif pair.h == 3 and pair.v == 3 then
+            os.setComputerLabel("Right_Left_Top_Bottom_Miner")
+            print("This is a right Bottom miner")
+
+            turtle.dig()
+            turtle.turnRight()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnLeft()
+            turtle.turnLeft()
+            if turtle.place() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.turnRight()
+            if turtle.placeUp() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            if turtle.placeDown() == false then
+                if turtle.getItemCount() == 0 then
+                    if itemToFirstSlot() == false then
+                        debug("No building blocks")
+                    end
+                end
+            end
+            turtle.forward()
         else
-            waitForKey()
             error("something went wrong assigning the position in the tunnel formation")
         end
     end
