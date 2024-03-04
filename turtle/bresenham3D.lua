@@ -177,7 +177,7 @@ local function moveTo(target, position)
     local d = target - position
 
     -- Move in X direction
-    while target ~= position do
+    while true do
         if d.x == 0 then
             print("dx 0")
         elseif d.x > 0 then
@@ -207,7 +207,9 @@ local function moveTo(target, position)
             moveDown()
             d.y = d.y + 1
         end
-        position = vector.new(gps.locate())
+        if d.x == 0 and d.y == 0 and d.z == 0 do
+            break
+        end
     end
 end
 
