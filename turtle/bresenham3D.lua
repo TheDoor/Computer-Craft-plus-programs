@@ -172,46 +172,28 @@ end
 
 -- Function to move to a new target location
 local function moveTo(target, position)
-    -- Get current location (You need to implement this based on how you track turtle's location)
-    -- Subtract current location from target location
-    local d = target - position
+    -- Calculate differences in coordinates
+    local dx, dy, dz = target[1] - position[1], target[2] - position[2], target[3] - position[3]
 
-    -- Move in X direction
-    while true do
-        if d.x == 0 then
-            print("dx 0")
-        elseif d.x > 0 then
-            moveNegX()
-            d.x = d.x - 1
-        else
-            movePosX()
-            d.x = d.x + 1
-        end
+    -- Define movement functions based on direction
+    local moveFunctions = {
+        [1] = { movePosX, moveNegX }, -- X-axis movement
+        [2] = { movePosY, moveNegY }, -- Y-axis movement
+        [3] = { movePosZ, moveNegZ }  -- Z-axis movement
+    }
 
-        if d.z == 0 then
-            print("dz 0")
-        elseif d.z > 0 then
-            moveNegZ()
-            d.z = d.z - 1
-        else
-            movePosZ()
-            d.z = d.z + 1
-        end
+    -- Move to the target position
+    for _, axis in ipairs({ 1, 2, 3 }) do
+        local movement = moveFunctions[axis]
+        local delta = { dx, dy, dz }
+        local direction = delta[axis]
 
-        if d.y == 0 then
-            print("dy 0")
-        elseif d.y > 0 then
-            moveDown()
-            d.y = d.y - 1
-        else
-            moveUp()
-            d.y = d.y + 1
-        end
-        if d.x == 0 and d.y == 0 and d.z == 0 then
-            break
+        if direction ~= 0 then
+            movement[direction > 0 and 1 or 2](math.abs(direction))
         end
     end
 end
+
 
 function Bresenham3D(x1, y1, z1, x2, y2, z2)
     local ListOfPoints = {}
