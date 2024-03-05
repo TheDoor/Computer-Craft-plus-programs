@@ -201,10 +201,10 @@ local function moveTo(target, position)
         if d.y == 0 then
             print("dy 0")
         elseif d.y > 0 then
-            moveUp()
+            moveDown()
             d.y = d.y - 1
         else
-            moveDown()
+            moveUp()
             d.y = d.y + 1
         end
         if d.x == 0 and d.y == 0 and d.z == 0 then
