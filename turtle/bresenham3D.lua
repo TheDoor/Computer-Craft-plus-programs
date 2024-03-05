@@ -189,7 +189,7 @@ local function moveTo(target, position)
         local direction = delta[axis]
 
         if direction ~= 0 then
-            movement[direction > 0 and 1 or 2](math.abs(direction))
+            movement[direction > 0 and 2 or 1](math.abs(direction))
         end
     end
 end
