@@ -62,7 +62,7 @@ local function moveBackward(times)
 end
 
 -- Function to move the turtle upward
-local function moveUp(times)
+local function movePosY(times)
     times = times or 1
     for _ = 1, times do
         turtle.digUp()
@@ -72,7 +72,7 @@ local function moveUp(times)
 end
 
 -- Function to move the turtle downward
-local function moveDown(times)
+local function moveNegY(times)
     times = times or 1
     for _ = 1, times do
         turtle.digDown()
