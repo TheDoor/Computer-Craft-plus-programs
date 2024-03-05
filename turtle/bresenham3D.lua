@@ -181,20 +181,20 @@ local function moveTo(target, position)
         if d.x == 0 then
             print("dx 0")
         elseif d.x > 0 then
-            movePosX()
+            moveNegX()
             d.x = d.x - 1
         else
-            moveNegX()
+            movePosX()
             d.x = d.x + 1
         end
 
         if d.z == 0 then
             print("dz 0")
         elseif d.z > 0 then
-            movePosZ()
+            moveNegZ()
             d.z = d.z - 1
         else
-            moveNegZ()
+            movePosZ()
             d.z = d.z + 1
         end
 
