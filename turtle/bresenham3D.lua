@@ -86,13 +86,13 @@ local function movePosX(times)
     if facing == POSX then
         return moveForward(times)
     elseif facing == NEGX then
-        turnRight()
+        turnRight(2)
         return moveForward(times)
     elseif facing == POSZ then
         turnLeft()
         return moveForward(times)
     elseif facing == NEGZ then
-        turnRight(2)
+        turnRight()
         return moveForward(times)
     end
 end
@@ -119,12 +119,12 @@ local function movePosZ(times)
         turnRight()
         return moveForward(times)
     elseif facing == NEGX then
-        turnRight(2)
+        turnLeft()
         return moveForward(times)
     elseif facing == POSZ then
         return moveForward(times)
     elseif facing == NEGZ then
-        turnLeft()
+        turnLeft(2)
         return moveForward(times)
     end
 end
