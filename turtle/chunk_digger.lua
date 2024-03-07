@@ -411,11 +411,9 @@ local function startup()
         waitForKey()
         error("Please check your gps system or the turtle's modem")
     end
-    waitForKey()
     print("Calibrating the turtle ...")
     -- Calibrating the orientation of the turtle
     calibrate(currentPosition)
-    waitForKey()
     -- Checking if turtle is already configuered
     if fs.exists(configFilename) then
         print("Loading configuration ...")
@@ -427,7 +425,6 @@ local function startup()
     loadConfigFromFile()
     loadLatestPositionFromFile()
     print("moving to last position")
-    waitForKey()
     moveTo(lastPosition, currentPosition)
 end
 
