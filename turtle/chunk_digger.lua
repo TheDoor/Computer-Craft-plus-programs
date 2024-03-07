@@ -393,7 +393,7 @@ end
 
 local function startup()
     -- locating turtle
-    local currentPosition = gps.locate()
+    local currentPosition = vector.new(gps.locate())
     if currentPosition == nil then
         term.clear()
         print("Please check your gps system or the turtle's modem")
