@@ -34,7 +34,8 @@ local function loadConfigFromFile()
     if not file then
         return nil
     end
-    while file.readLine() ~= nil do -- Notice the parentheses to call the iterator function
+    local line = file.readLine()
+    while line ~= nil do -- Notice the parentheses to call the iterator function
         local key, value = line:match("(%w+)%[(.-)%]")
         if key == "min" then
             local x, y, z = value:match("%[(.-),(.-),(.-)%]")
@@ -46,6 +47,7 @@ local function loadConfigFromFile()
             local x, y, z = value:match("%[(.-),(.-),(.-)%]")
             chestPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
         end
+        line = file.readLine()
     end
     file.close()
 end
