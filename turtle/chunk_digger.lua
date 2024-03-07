@@ -36,26 +36,26 @@ local function loadConfigFromFile()
         return nil
     end
     local line = file.readLine()
-    while line ~= nil do -- Notice the parentheses to call the iterator function
+    while line ~= nil do
         local key, value = line:match("(%w+)%[(.-)%]")
-        print("looping through lines", key, value)
         if key == "min" then
-            local x, y, z = value:match("%[(.-),(.-),(.-)%]")
+            local x, y, z = value:match("(%d+),(%d+),(%d+)")
             minPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
             print(x, y, z)
         elseif key == "max" then
-            local x, y, z = value:match("%[(.-),(.-),(.-)%]")
+            local x, y, z = value:match("(%d+),(%d+),(%d+)")
             maxPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
             print(x, y, z)
         elseif key == "chest" then
-            local x, y, z = value:match("%[(.-),(.-),(.-)%]")
+            local x, y, z = value:match("(%d+),(%d+),(%d+)")
             chestPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
             print(x, y, z)
         end
-        line = file.readLine()
+        line = file.readLine() -- Advance to the next line
     end
     file.close()
 end
+
 
 
 local function savePositionToFile()
