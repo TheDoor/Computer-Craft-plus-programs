@@ -378,11 +378,19 @@ local function dig()
                 print("Digging new block")
             end
             -- Move along Z axis, alternate rotation along X axis
-            rotateTowardsZ("positive")
-            turtle.dig()
-            movePosZ()
-
-            if lastPosition.x <= minPosition.x then
+            -- Rotate and dig along X axis based on Y and Z parity
+            if yIsEven then
+                rotateTowardsZ("positive")
+                turtle.dig()
+                movePosZ()
+            else
+                rotateTowardsZ("negative")
+                turtle.dig()
+                moveNegZ()
+            end
+            updatePosition()
+            zIsEven = lastPosition.z % 2 == 0
+            if (yIsEven and zIsEven) or (not yIsEven and not zIsEven) then
                 rotateTowardsX("positive")
                 turtle.dig()
                 movePosX()
@@ -391,7 +399,6 @@ local function dig()
                 turtle.dig()
                 moveNegX()
             end
-
             updatePosition()
             handleTreasure()
             print("starting new row")
