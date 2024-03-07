@@ -34,7 +34,7 @@ local function loadConfigFromFile()
     if not file then
         return nil
     end
-    for line in file.readLine do
+    for line in file.readLine() do -- Notice the parentheses to call the iterator function
         local key, value = line:match("(%w+)%[(.-)%]")
         if key == "min" then
             minPosition = vector.new(parsePositionArray(value))
@@ -46,6 +46,7 @@ local function loadConfigFromFile()
     end
     file.close()
 end
+
 
 local function savePositionToFile()
     local file = fs.open(lastPositionFilename, "w")
@@ -64,7 +65,6 @@ local function loadLatestPositionFromFile()
     local x, y, z = positionStr:match("%[(.-),(.-),(.-)%]")
     lastPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
 end
-
 
 local function configureTurtle()
     print("What is the position of the chest?")
