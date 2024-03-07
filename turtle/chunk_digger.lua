@@ -368,7 +368,7 @@ local function diglogic()
         digCycle(zIsEven, yIsEven)
     end
 
-    while lastPosition.y >= minPosition.y and y <= maxPosition.y do
+    while lastPosition.y >= minPosition.y and lastPosition.y <= maxPosition.y do
         yIsEven = lastPosition.y % 2 == 0
         if lastPosition.y == minPosition.y and (lastPosition.z == maxPosition.z or lastPosition.z == minPosition.z) and (lastPosition.x == maxPosition.x or lastPosition.x == minPosition.x) then
             break
