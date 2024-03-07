@@ -346,36 +346,46 @@ local function handleTreasure()
     -- -- -- -- commence dig cycle
 end
 
--- dig cycle
-local function dig()
-    while lastPosition.y > minPosition.y and lastPosition.y <= maxPosition.y do
-        print("Y: ", lastPosition.x, lastPosition.y, lastPosition.z)
-        -- Check if Y layer is even or odd
-        local yIsEven = lastPosition.y % 2 == 0
-        -- Dig along Z axis
-        while lastPosition.z >= minPosition.z and lastPosition.z < maxPosition.z do
-            print("Z: ", lastPosition.x, lastPosition.y, lastPosition.z)
-            -- Check if Z column is even or odd
-            local zIsEven = lastPosition.z % 2 == 0
-            while lastPosition.x >= minPosition.x and lastPosition.x < maxPosition.x do
-                -- Rotate and dig along X axis based on Y and Z parity
-                if (yIsEven and zIsEven) or (not yIsEven and not zIsEven) then
-                    rotateTowardsX("positive")
-                    turtle.dig()
-                    movePosX()
-                else
-                    rotateTowardsX("negative")
-                    turtle.dig()
-                    moveNegX()
-                end
+local function digCycle(zIsEven, yIsEven)
+    if (zIsEven == yIsEven) then
+        rotateX("positive")
+        turtle.dig()
+        movePosX()
+    else
+        rotateX("negative")
+        turtle.dig()
+        moveNegX()
+    end
+    updatePosition()
+end
 
-                updatePosition()
-                handleTreasure()
-                print("Digging new block: ", lastPosition.x, lastPosition.y, lastPosition.z)
+-- dig cycle
+local function diglogic()
+    local yIsEven = lastPosition.y % 2 == 0
+    local zIsEven = lastPosition.z % 2 == 0
+
+    if lastPosition.x == minPosition.x and lastPosition.y == maxPosition.y and lastPosition.z == minPosition.z then
+        digCycle(zIsEven, yIsEven)
+    end
+
+    while lastPosition.y >= minPosition.y and y <= maxPosition.y do
+        yIsEven = lastPosition.y % 2 == 0
+        if lastPosition.y == minPosition.y and (lastPosition.z == maxPosition.z or lastPosition.z == minPosition.z) and (lastPosition.x == maxPosition.x or lastPosition.x == minPosition.x) then
+            break
+        end
+        while lastPosition.z >= minPosition.z and lastPosition.z <= maxPosition.z do
+            zIsEven = lastPosition.z % 2 == 0
+            if (lastPosition.z == minPosition.z or lastPosition.z == maxPosition.z) and lastPosition.x == minPosition.x or maxPosition.x then
+                break
             end
-            -- Move along Z axis, alternate rotation along X axis
-            -- Rotate and dig along X axis based on Y and Z parity
-            if yIsEven then
+            while lastPosition.x >= minPosition.x and lastPosition.x <= maxPosition.x do
+                if lastPosition.x == minPosition.x or lastPosition.x == maxPosition.x then
+                    break
+                end
+                digCycle(zIsEven, yIsEven)
+                print("Digged block: ", lastPosition.x, lastPosition.y, lastPosition.z)
+            end
+            if (zIsEven == yIsEven) then
                 rotateTowardsZ("positive")
                 turtle.dig()
                 movePosZ()
@@ -384,29 +394,15 @@ local function dig()
                 turtle.dig()
                 moveNegZ()
             end
-            updatePosition()
-            zIsEven = lastPosition.z % 2 == 0
-            if (yIsEven and zIsEven) or (not yIsEven and not zIsEven) then
-                rotateTowardsX("positive")
-                turtle.dig()
-                movePosX()
-            else
-                rotateTowardsX("negative")
-                turtle.dig()
-                moveNegX()
-            end
-            updatePosition()
-            handleTreasure()
-            print("starting new row")
+            digCycle(zIsEven, yIsEven)
+            print("Started a new row")
         end
-        -- Move down along Y axis
         turtle.digDown()
         moveNegY()
-        updatePosition()
-        handleTreasure()
-        print("starting new layer")
+        turnRight(2)
+        digCycle(zIsEven, yIsEven)
+        print("Started a new layer")
     end
-    print("done")
 end
 
 -- update screen
@@ -444,7 +440,7 @@ local function main()
     print("Starting up the program...")
     startup()
     print("Start to dig...")
-    dig()
+    diglogic()
 end
 
 while true do
