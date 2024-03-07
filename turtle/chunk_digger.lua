@@ -11,10 +11,16 @@ end
 
 local configFilename = "cfg.txt"
 local lastPositionFilename = "lastPosition.txt"
-local minPosition
-local maxPosition
-local chestPosition
-local lastPosition
+local minPosition = vector.new(0, 0, 0)
+local maxPosition = vector.new(0, 0, 0)
+local chestPosition = vector.new(0, 0, 0)
+local lastPosition = vector.new(0, 0, 0)
+
+local function parsePositionArray(str)
+    local x, y, z = str:match("(%d+),(%d+),(%d+)")
+    return tonumber(x), tonumber(y), tonumber(z)
+end
+
 
 -- save config
 local function saveConfigToFile()
@@ -68,32 +74,29 @@ end
 
 local function configureTurtle()
     print("What is the position of the chest?")
-    local chest = {}
-    print("What is the X position of the chest?")
-    chest.x = tonumber(read())
-    print("What is the Y position of the chest?")
-    chest.y = tonumber(read())
-    print("What is the Z position of the chest?")
-    chest.z = tonumber(read())
+
+    print("What is the X position?")
+    chestPosition.x = tonumber(read())
+    print("What is the Y position?")
+    chestPosition.y = tonumber(read())
+    print("What is the Z position?")
+    chestPosition.z = tonumber(read())
     print("What is the min position of area?")
-    local min = {}
-    print("What is the X position of the min position?")
-    min.x = tonumber(read())
-    print("What is the Y position of the min position?")
-    min.y = tonumber(read())
-    print("What is the Z position of the min position?")
-    min.z = tonumber(read())
+
+    print("What is the X position?")
+    minPosition.x = tonumber(read())
+    print("What is the Y position?")
+    minPosition.y = tonumber(read())
+    print("What is the Z position?")
+    minPosition.z = tonumber(read())
     print("What is the max position of area?")
-    local max = {}
-    print("What is the X position of the max position?")
-    max.x = tonumber(read())
-    print("What is the Y position of the max position?")
-    max.y = tonumber(read())
-    print("What is the Z position of the max position?")
-    max.z = tonumber(read())
-    minPosition = vector.new(min)
-    maxPosition = vector.new(max)
-    chestPosition = vector.new(chest)
+
+    print("What is the X position?")
+    maxPosition.x = tonumber(read())
+    print("What is the Y position?")
+    maxPosition.y = tonumber(read())
+    print("What is the Z position?")
+    maxPosition.z = tonumber(read())
     saveConfigToFile()
 end
 
@@ -379,13 +382,16 @@ local function dig()
 
             updatePosition()
             handleTreasure()
+            print("Digging new block")
         end
         -- Move down along Y axis
         turtle.digDown()
         moveNegY()
         updatePosition()
         handleTreasure()
+        print("starting new row")
     end
+    print("starting new layer")
 end
 
 -- update screen
@@ -393,6 +399,7 @@ end
 
 local function startup()
     -- locating turtle
+    print("Getting curren position ...")
     local currentPosition = vector.new(gps.locate())
     if currentPosition == nil then
         term.clear()
@@ -400,23 +407,28 @@ local function startup()
         waitForKey()
         error("Please check your gps system or the turtle's modem")
     end
-
+    print("Calibrating the turtle ...")
     -- Calibrating the orientation of the turtle
     calibrate(currentPosition)
 
     -- Checking if turtle is already configuered
     if fs.exists(configFilename) then
-        loadConfigFromFile()
+        print("Loading configuration ...")
     else
         configureTurtle()
-        loadConfigFromFile()
+        lastPosition = minPosition
+        savePositionToFile()
     end
+    loadConfigFromFile()
     loadLatestPositionFromFile()
+    print("moving to last position")
     moveTo(currentPosition, lastPosition)
 end
 
 local function main()
+    print("Starting up the program...")
     startup()
+    print("Start to dig...")
     dig()
 end
 
