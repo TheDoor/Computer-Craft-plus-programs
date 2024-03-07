@@ -63,6 +63,7 @@ local function loadLatestPositionFromFile()
 
     local value = positionStr:match("(%w+)%[(.-)%]")
     lastPosition = vector.new(parsePositionArray(value))
+    print(lastPosition.x, lastPosition.y, lastPosition.z)
 end
 
 
