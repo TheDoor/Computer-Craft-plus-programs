@@ -37,11 +37,14 @@ local function loadConfigFromFile()
     for line in file.readLine() do -- Notice the parentheses to call the iterator function
         local key, value = line:match("(%w+)%[(.-)%]")
         if key == "min" then
-            minPosition = vector.new(parsePositionArray(value))
+            local x, y, z = positionStr:match("%[(.-),(.-),(.-)%]")
+            minPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
         elseif key == "max" then
-            maxPosition = vector.new(parsePositionArray(value))
+            local x, y, z = positionStr:match("%[(.-),(.-),(.-)%]")
+            maxPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
         elseif key == "chest" then
-            chestPosition = vector.new(parsePositionArray(value))
+            local x, y, z = positionStr:match("%[(.-),(.-),(.-)%]")
+            chestPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
         end
     end
     file.close()
