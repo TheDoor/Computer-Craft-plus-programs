@@ -348,19 +348,16 @@ end
 
 -- dig cycle
 local function dig()
-    print("dig: ", lastPosition.x, lastPosition.y, lastPosition.z)
-    print("min: ", minPosition.x, minPosition.y, minPosition.z)
-    print("max: ", maxPosition.x, maxPosition.y, maxPosition.z)
-    while lastPosition.y > minPosition.y and lastPosition.y < maxPosition.y do
+    while lastPosition.y > minPosition.y and lastPosition.y <= maxPosition.y do
         print("Y: ", lastPosition.x, lastPosition.y, lastPosition.z)
         -- Check if Y layer is even or odd
         local yIsEven = lastPosition.y % 2 == 0
         -- Dig along Z axis
-        while lastPosition.z > minPosition.z and lastPosition.z < maxPosition.z do
+        while lastPosition.z >= minPosition.z and lastPosition.z < maxPosition.z do
             print("Z: ", lastPosition.x, lastPosition.y, lastPosition.z)
             -- Check if Z column is even or odd
             local zIsEven = lastPosition.z % 2 == 0
-            while lastPosition.x > minPosition.x and lastPosition.x < maxPosition.x do
+            while lastPosition.x >= minPosition.x and lastPosition.x < maxPosition.x do
                 -- Rotate and dig along X axis based on Y and Z parity
                 if (yIsEven and zIsEven) or (not yIsEven and not zIsEven) then
                     rotateTowardsX("positive")
@@ -374,8 +371,7 @@ local function dig()
 
                 updatePosition()
                 handleTreasure()
-                print("X: ", lastPosition.x, lastPosition.y, lastPosition.z)
-                print("Digging new block")
+                print("Digging new block: ", lastPosition.x, lastPosition.y, lastPosition.z)
             end
             -- Move along Z axis, alternate rotation along X axis
             -- Rotate and dig along X axis based on Y and Z parity
