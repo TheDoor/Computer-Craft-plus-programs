@@ -422,7 +422,7 @@ local function startup()
     loadLatestPositionFromFile()
     print("moving to last position")
     waitForKey()
-    moveTo(currentPosition, lastPosition)
+    moveTo(lastPosition, currentPosition)
 end
 
 local function main()
