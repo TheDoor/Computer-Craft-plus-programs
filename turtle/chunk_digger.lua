@@ -49,7 +49,7 @@ end
 
 local function savePositionToFile()
     local file = fs.open(lastPositionFilename, "w")
-    file.writeLine("last_location[" .. lastPosition.x .. "," .. lastPosition.y .. "," .. lastPosition.z .. "]")
+    file.writeLine("last_location:[" .. lastPosition.x .. "," .. lastPosition.y .. "," .. lastPosition.z .. "]")
     file.close()
 end
 
@@ -61,8 +61,8 @@ local function loadLatestPositionFromFile()
     local positionStr = file.readLine()
     file.close()
 
-    local value = positionStr:match("(%w+)%[(.-)%]")
-    lastPosition = vector.new(parsePositionArray(value))
+    local x, y, z = positionStr:match("%[(.-),(.-),(.-)%]")
+    lastPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
     print(lastPosition.x, lastPosition.y, lastPosition.z)
 end
 
