@@ -297,10 +297,21 @@ end
 
 -- Function to move to a new target location
 local function moveTo(target, position)
+    -- Ensure target and position are vectors
+    if type(target) ~= "table" or type(position) ~= "table" then
+        print("Invalid target or position vectors")
+        return
+    end
+
     -- Calculate differences in coordinates
     local delta = target - position
-    print(delta.x, delta.y, delta.z)
-    print(delta[1], delta[2], delta[3])
+    print("Delta:", delta)
+
+    -- Ensure delta is a valid vector
+    if type(delta) ~= "table" or #delta < 3 then
+        print("Invalid delta vector")
+        return
+    end
 
     -- Define movement functions based on direction
     local moveFunctions = {
@@ -314,13 +325,14 @@ local function moveTo(target, position)
         local movement = moveFunctions[axis]
 
         local direction = delta[axis]
-        print(direction)
+        print("Direction:", direction)
 
         if direction ~= 0 then
             movement[direction > 0 and 1 or 2](math.abs(direction))
         end
     end
 end
+
 
 local function handleTreasure()
     -- treasure handeling
