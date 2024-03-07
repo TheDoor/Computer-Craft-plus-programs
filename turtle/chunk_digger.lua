@@ -36,8 +36,6 @@ local function loadConfigFromFile()
     if not file then
         return nil                            -- Return nil if file does not exist
     end
-
-    local min, max, chest
     for line in file.readLine do
         local key, value = line:match("(%w+)%[(.-)%]")
         if key == "min" then
@@ -48,7 +46,7 @@ local function loadConfigFromFile()
             chestPosition = vector.new(parsePositionArray(value))
         end
     end
-
+    print(chestPosition.x, chestPosition.y, chestPosition.z)
     file.close()
 end
 
@@ -70,6 +68,7 @@ local function loadLatestPositionFromFile()
 
     local x, y, z = positionStr:match("%[(.-),(.-),(.-)%]")
     lastPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
+    print(lastPosition.x, lastPosition.y, lastPosition.z)
 end
 
 local function configureTurtle()
