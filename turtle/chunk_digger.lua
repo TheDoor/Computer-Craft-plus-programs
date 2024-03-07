@@ -40,12 +40,15 @@ local function loadConfigFromFile()
         if key == "min" then
             local x, y, z = value:match("%[(.-),(.-),(.-)%]")
             minPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
+            print(x, y, z)
         elseif key == "max" then
             local x, y, z = value:match("%[(.-),(.-),(.-)%]")
             maxPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
+            print(x, y, z)
         elseif key == "chest" then
             local x, y, z = value:match("%[(.-),(.-),(.-)%]")
             chestPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
+            print(x, y, z)
         end
         line = file.readLine()
     end
