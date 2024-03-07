@@ -40,7 +40,7 @@ local function loadConfigFromFile()
             local x, y, z = value:match("%[(.-),(.-),(.-)%]")
             minPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
         elseif key == "max" then
-            local x, y, z = positionStr:match("%[(.-),(.-),(.-)%]")
+            local x, y, z = value:match("%[(.-),(.-),(.-)%]")
             maxPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
         elseif key == "chest" then
             local x, y, z = value:match("%[(.-),(.-),(.-)%]")
