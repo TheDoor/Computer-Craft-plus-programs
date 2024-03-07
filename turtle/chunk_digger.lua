@@ -348,11 +348,11 @@ end
 
 local function digCycle(zIsEven, yIsEven)
     if (zIsEven == yIsEven) then
-        rotateX("positive")
+        rotateTowardsX("positive")
         turtle.dig()
         movePosX()
     else
-        rotateX("negative")
+        rotateTowardsX("negative")
         turtle.dig()
         moveNegX()
     end
