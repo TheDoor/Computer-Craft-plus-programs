@@ -340,11 +340,14 @@ end
 
 -- dig cycle
 local function dig()
+    print("dig: ", lastPosition.x, lastPosition.y, lastPosition.z)
     while lastPosition.y >= minPosition.y and lastPosition.y <= maxPosition.y do
+        print("Y: ", lastPosition.x, lastPosition.y, lastPosition.z)
         -- Check if Y layer is even or odd
         local yIsEven = lastPosition.y % 2 == 0
         -- Dig along Z axis
         while lastPosition.z >= minPosition.z and lastPosition.z <= maxPosition.z do
+            print("Z: ", lastPosition.x, lastPosition.y, lastPosition.z)
             -- Check if Z column is even or odd
             local zIsEven = lastPosition.z % 2 == 0
             while lastPosition.x >= minPosition.x and lastPosition.x <= maxPosition.x do
@@ -361,7 +364,7 @@ local function dig()
 
                 updatePosition()
                 handleTreasure()
-                print("lP: ", lastPosition.x, lastPosition.y, lastPosition.z)
+                print("X: ", lastPosition.x, lastPosition.y, lastPosition.z)
                 print("Digging new block")
             end
             -- Move along Z axis, alternate rotation along X axis
