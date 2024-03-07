@@ -341,6 +341,8 @@ end
 -- dig cycle
 local function dig()
     print("dig: ", lastPosition.x, lastPosition.y, lastPosition.z)
+    print("min: ", minPosition.x, minPosition.y, minPosition.z)
+    print("max: ", maxPosition.x, maxPosition.y, maxPosition.z)
     while lastPosition.y >= minPosition.y and lastPosition.y <= maxPosition.y do
         print("Y: ", lastPosition.x, lastPosition.y, lastPosition.z)
         -- Check if Y layer is even or odd
