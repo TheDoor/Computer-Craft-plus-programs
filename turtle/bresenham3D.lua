@@ -173,7 +173,7 @@ end
 -- Function to move to a new target location
 local function moveTo(target, position)
     -- Calculate differences in coordinates
-    local d = target - position
+    local delta = target - position
 
     -- Define movement functions based on direction
     local moveFunctions = {
@@ -185,7 +185,6 @@ local function moveTo(target, position)
     -- Move to the target position
     for _, axis in ipairs({ 1, 2, 3 }) do
         local movement = moveFunctions[axis]
-        local delta = { d.x, d.y, d.z }
         local direction = delta[axis]
 
         if direction ~= 0 then
@@ -303,5 +302,26 @@ function main()
         currentPosition = newPosition
     end
 end
+
+-- turtle
+-- -- initiate startup sequence
+-- -- -- callibrate orientation
+-- -- -- check for neighbours by broadcasting coordinates and listening at the same time, for each message recieved resend own location and orientation
+-- -- -- -- if neighbours are broken, then they will not awnser the next call
+-- -- -- -- save a list of all turtles adjecent to yourself and facing same orientation
+-- -- -- also wait for clear command with channel id for this formation specific and stop listening and
+-- -- -- check for spot in formation if no no neighbours give error
+-- -- -- check if what turtle is middle of formation if 2x2 take top left
+-- -- -- -- take highest, lowest from horizontal and vertical
+-- -- -- wait for target position
+-- -- -- -- calculate the Bresenham3D path based on middle turtle and for other turtles just add distance from middle
+-- -- -- start mining
+-- -- -- -- prefer first x then z then y
+-- -- -- -- after rotate or move wait for everyone to finish
+-- -- -- -- -- list of all turtles and remove when recieved ready when list clear commence
+-- -- -- -- outside always do blockbreak (top or bottom or side) and place back block
+
+
+
 
 main()
