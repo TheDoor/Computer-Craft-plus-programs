@@ -30,6 +30,7 @@ local function saveConfigToFile()
 end
 
 local function loadConfigFromFile()
+    print("Load config file")
     local file = fs.open(configFilename, "r")
     if not file then
         return nil
