@@ -385,6 +385,7 @@ local function dig()
 
             updatePosition()
             handleTreasure()
+            print("lP: ", lastPosition.x, lastPosition.y, lastPosition.z)
             print("Digging new block")
         end
         -- Move down along Y axis
