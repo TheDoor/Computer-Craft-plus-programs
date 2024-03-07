@@ -63,7 +63,6 @@ local function loadLatestPositionFromFile()
 
     local x, y, z = positionStr:match("%[(.-),(.-),(.-)%]")
     lastPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
-    print(lastPosition.x, lastPosition.y, lastPosition.z)
 end
 
 
@@ -304,11 +303,6 @@ local function moveTo(target, position)
         [2] = target.y - position.y,
         [3] = target.z - position.z
     }
-
-    print(target.x, target.y, target.z)
-    print(position.x, position.y, position.z)
-    print(delta[1], delta[2], delta[3])
-
     -- Define movement functions based on direction
     local moveFunctions = {
         [1] = { movePosX, moveNegX }, -- X-axis movement
@@ -367,6 +361,8 @@ local function dig()
 
                 updatePosition()
                 handleTreasure()
+                print("lP: ", lastPosition.x, lastPosition.y, lastPosition.z)
+                print("Digging new block")
             end
             -- Move along Z axis, alternate rotation along X axis
             rotateTowardsZ("positive")
@@ -385,17 +381,16 @@ local function dig()
 
             updatePosition()
             handleTreasure()
-            print("lP: ", lastPosition.x, lastPosition.y, lastPosition.z)
-            print("Digging new block")
+            print("starting new row")
         end
         -- Move down along Y axis
         turtle.digDown()
         moveNegY()
         updatePosition()
         handleTreasure()
-        print("starting new row")
+        print("starting new layer")
     end
-    print("starting new layer")
+    print("done")
 end
 
 -- update screen
