@@ -346,10 +346,9 @@ end
 
 -- dig cycle
 local function dig()
-    -- Check if Y layer is even or odd
-    local yIsEven = lastPosition.y % 2 == 0
-
     while lastPosition.y >= minPosition.y and lastPosition.y <= maxPosition.y do
+        -- Check if Y layer is even or odd
+        local yIsEven = lastPosition.y % 2 == 0
         -- Dig along Z axis
         while lastPosition.z >= minPosition.z and lastPosition.z <= maxPosition.z do
             -- Check if Z column is even or odd
