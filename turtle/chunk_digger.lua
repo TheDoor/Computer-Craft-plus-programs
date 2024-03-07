@@ -304,14 +304,11 @@ local function moveTo(target, position)
     end
 
     -- Calculate differences in coordinates
-    local delta = target - position
-    print("Delta:", delta)
-
-    -- Ensure delta is a valid vector
-    if type(delta) ~= "table" or #delta < 3 then
-        print("Invalid delta vector")
-        return
-    end
+    local delta = {
+        [1] = target.x - position.x,
+        [2] = target.y - position.y,
+        [3] = target.z - position.z
+    }
 
     -- Define movement functions based on direction
     local moveFunctions = {
