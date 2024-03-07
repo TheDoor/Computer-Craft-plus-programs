@@ -37,8 +37,8 @@ local function loadConfigFromFile()
     end
     local line = file.readLine()
     while line ~= nil do -- Notice the parentheses to call the iterator function
-        print("looping through lines")
         local key, value = line:match("(%w+)%[(.-)%]")
+        print("looping through lines", key, value)
         if key == "min" then
             local x, y, z = value:match("%[(.-),(.-),(.-)%]")
             minPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
