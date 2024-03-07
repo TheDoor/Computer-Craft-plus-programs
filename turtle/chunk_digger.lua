@@ -300,6 +300,7 @@ local function moveTo(target, position)
     -- Calculate differences in coordinates
     local delta = target - position
     print(delta.x, delta.y, delta.z)
+    print(delta[1], delta[2], delta[3])
 
     -- Define movement functions based on direction
     local moveFunctions = {
@@ -311,6 +312,7 @@ local function moveTo(target, position)
     -- Move to the target position
     for _, axis in ipairs({ 1, 2, 3 }) do
         local movement = moveFunctions[axis]
+
         local direction = delta[axis]
         print(direction)
 
