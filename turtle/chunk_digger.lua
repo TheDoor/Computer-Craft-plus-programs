@@ -11,10 +11,10 @@ end
 
 local configFilename = "cfg.txt"
 local lastPositionFilename = "lastPosition.txt"
-local minPosition = vector.new()
-local maxPosition = vector.new()
-local chestPosition = vector.new()
-local lastPosition = vector.new()
+local minPosition
+local maxPosition
+local chestPosition
+local lastPosition
 
 -- save config
 local function saveConfigToFile()
@@ -66,15 +66,6 @@ local function loadLatestPositionFromFile()
     lastPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
 end
 
-
-local function relativePositionToAbsolute(relativePosition)
-    return minPosition + relativePosition
-end
-
-local function absolutePositionToRelative(absolutePosition)
-    return absolutePosition - minPosition
-end
-
 local function configureTurtle()
     print("What is the position of the chest?")
     local chest = {}
@@ -100,7 +91,10 @@ local function configureTurtle()
     max.y = tonumber(read())
     print("What is the Z position of the max position?")
     max.z = tonumber(read())
-    saveConfigToFile(vector.new(min), vector.new(max), vector.new(chest))
+    minPosition = vector.new(min)
+    maxPosition = vector.new(max)
+    chestPosition = vector.new(chest)
+    saveConfigToFile()
 end
 
 --------------
