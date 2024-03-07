@@ -34,7 +34,7 @@ local function loadConfigFromFile()
     if not file then
         return nil
     end
-    for line in file.readLine() do -- Notice the parentheses to call the iterator function
+    while file.readLine() ~= nil do -- Notice the parentheses to call the iterator function
         local key, value = line:match("(%w+)%[(.-)%]")
         if key == "min" then
             local x, y, z = value:match("%[(.-),(.-),(.-)%]")
