@@ -297,18 +297,16 @@ end
 
 -- Function to move to a new target location
 local function moveTo(target, position)
-    -- Ensure target and position are vectors
-    if type(target) ~= "table" or type(position) ~= "table" then
-        print("Invalid target or position vectors")
-        return
-    end
-
     -- Calculate differences in coordinates
     local delta = {
         [1] = target.x - position.x,
         [2] = target.y - position.y,
         [3] = target.z - position.z
     }
+
+    print(target.x, target.y, target.z)
+    print(position.x, position.y, position.z)
+    print(delta[1], delta[2], delta[3])
 
     -- Define movement functions based on direction
     local moveFunctions = {
