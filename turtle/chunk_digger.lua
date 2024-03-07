@@ -21,20 +21,18 @@ local function parsePositionArray(str)
     return tonumber(x), tonumber(y), tonumber(z)
 end
 
-
--- save config
 local function saveConfigToFile()
-    local file = fs.open(configFilename, "w") -- Open file in write mode
+    local file = fs.open(configFilename, "w")
     file.writeLine("min[" .. minPosition.x .. "," .. minPosition.y .. "," .. minPosition.z .. "]")
     file.writeLine("max[" .. maxPosition.x .. "," .. maxPosition.y .. "," .. maxPosition.z .. "]")
     file.writeLine("chest[" .. chestPosition.x .. "," .. chestPosition.y .. "," .. chestPosition.z .. "]")
     file.close()
 end
--- load configurations
+
 local function loadConfigFromFile()
-    local file = fs.open(configFilename, "r") -- Open file in read mode
+    local file = fs.open(configFilename, "r")
     if not file then
-        return nil                            -- Return nil if file does not exist
+        return nil
     end
     for line in file.readLine do
         local key, value = line:match("(%w+)%[(.-)%]")
@@ -46,30 +44,27 @@ local function loadConfigFromFile()
             chestPosition = vector.new(parsePositionArray(value))
         end
     end
-    print(chestPosition.x, chestPosition.y, chestPosition.z)
     file.close()
 end
 
--- save to file
 local function savePositionToFile()
-    local file = fs.open(lastPositionFilename, "w") -- Open file in write mode
-    file.writeLine("last_location:[" .. lastPosition.x .. "," .. lastPosition.y .. "," .. lastPosition.z .. "]")
+    local file = fs.open(lastPositionFilename, "w")
+    file.writeLine("last_location[" .. lastPosition.x .. "," .. lastPosition.y .. "," .. lastPosition.z .. "]")
     file.close()
 end
 
---load from file
 local function loadLatestPositionFromFile()
-    local file = fs.open(lastPositionFilename, "r") -- Open file in read mode
+    local file = fs.open(lastPositionFilename, "r")
     if not file then
-        return nil                                  -- Return nil if file does not exist
+        return nil
     end
     local positionStr = file.readLine()
     file.close()
 
-    local x, y, z = positionStr:match("%[(.-),(.-),(.-)%]")
-    lastPosition = vector.new(tonumber(x), tonumber(y), tonumber(z))
-    print(lastPosition.x, lastPosition.y, lastPosition.z)
+    local value = positionStr:match("(%w+)%[(.-)%]")
+    lastPosition = vector.new(parsePositionArray(value))
 end
+
 
 local function configureTurtle()
     print("What is the position of the chest?")
