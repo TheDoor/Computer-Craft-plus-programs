@@ -322,8 +322,6 @@ local function moveTo(target, position)
             movement[direction > 0 and 2 or 1](math.abs(direction))
         end
     end
-
-    updatePosition()
 end
 
 local function handleTreasure()
