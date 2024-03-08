@@ -375,7 +375,7 @@ local function diglogic()
         end
         while lastPosition.z >= minPosition.z and lastPosition.z <= maxPosition.z do
             zIsEven = lastPosition.z % 2 == 0
-            if (lastPosition.z == minPosition.z or lastPosition.z == maxPosition.z) and lastPosition.x == minPosition.x or maxPosition.x then
+            if (lastPosition.z == minPosition.z or lastPosition.z == maxPosition.z) and (lastPosition.x == minPosition.x or lastPosition.x == maxPosition.x) then
                 break
             end
             while lastPosition.x >= minPosition.x and lastPosition.x <= maxPosition.x do
