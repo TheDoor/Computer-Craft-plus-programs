@@ -16,11 +16,6 @@ local maxPosition = vector.new(0, 0, 0)
 local chestPosition = vector.new(0, 0, 0)
 local lastPosition = vector.new(0, 0, 0)
 
-local function parsePositionArray(str)
-    local x, y, z = str:match("(%d+),(%d+),(%d+)")
-    return tonumber(x), tonumber(y), tonumber(z)
-end
-
 local function saveConfigToFile()
     local file = fs.open(configFilename, "w")
     file.writeLine("min[" .. minPosition.x .. "," .. minPosition.y .. "," .. minPosition.z .. "]")
@@ -52,9 +47,6 @@ local function loadConfigFromFile()
     end
     file.close()
 end
-
-
-
 
 local function savePositionToFile()
     local file = fs.open(lastPositionFilename, "w")
@@ -331,6 +323,16 @@ local function moveTo(target, position)
     end
 end
 
+local function absoluteToRelative(position)
+    return position - minPosition
+end
+
+local function relativeToabsolute(position)
+    return position + minPosition
+end
+
+-- main loops --
+
 
 local function handleTreasure()
     -- treasure handeling
@@ -347,44 +349,64 @@ local function handleTreasure()
 end
 
 local function digCycle(zIsEven, yIsEven)
+    -- Function to perform digging based on parity of Z and Y
     if (zIsEven == yIsEven) then
+        -- If Z and Y have the same parity, rotate towards positive X
         rotateTowardsX("positive")
         turtle.dig()
         movePosX()
     else
+        -- If Z and Y have different parity, rotate towards negative X
         rotateTowardsX("negative")
         turtle.dig()
         moveNegX()
     end
+    -- Update the current position after digging
     updatePosition()
 end
 
--- dig cycle
+-- Main dig cycle function
 local function diglogic()
+    -- Get initial parity of Y and Z
     local yIsEven = lastPosition.y % 2 == 0
     local zIsEven = lastPosition.z % 2 == 0
 
+    -- Check if the turtle is at the starting position (minPosition)
     if lastPosition.x == minPosition.x and lastPosition.y == maxPosition.y and lastPosition.z == minPosition.z then
         digCycle(zIsEven, yIsEven)
     end
 
+    -- Loop through the Y-axis
     while lastPosition.y >= minPosition.y and lastPosition.y <= maxPosition.y do
         yIsEven = lastPosition.y % 2 == 0
-        if lastPosition.y == minPosition.y and (lastPosition.z == maxPosition.z or lastPosition.z == minPosition.z) and (lastPosition.x == maxPosition.x or lastPosition.x == minPosition.x) then
+
+        -- Check if the turtle has reached the end of the Y-axis
+        if lastPosition.y == minPosition.y and ((lastPosition.z == maxPosition.z and yIsEven) or (lastPosition.z == minPosition.z and not yIsEven)) and ((lastPosition.x == maxPosition.x and yIsEven == zIsEven) or (lastPosition.x == minPosition.x and yIsEven ~= zIsEven)) then
             break
         end
+
+        -- Loop through the Z-axis
         while lastPosition.z >= minPosition.z and lastPosition.z <= maxPosition.z do
             zIsEven = lastPosition.z % 2 == 0
+
+            -- Check if the turtle has reached the end of the Z-axis
             if (lastPosition.z == minPosition.z or lastPosition.z == maxPosition.z) and (lastPosition.x == minPosition.x or lastPosition.x == maxPosition.x) then
                 break
             end
+
+            -- Loop through the X-axis
             while lastPosition.x >= minPosition.x and lastPosition.x <= maxPosition.x do
-                if lastPosition.x == minPosition.x or lastPosition.x == maxPosition.x then
+                -- Check if the turtle has reached the end of the X-axis
+                if (lastPosition.x == minPosition.x and not zIsEven) or (lastPosition.x == maxPosition.x and zIsEven) then
                     break
                 end
+
+                -- Perform digging cycle based on parity of Z and Y
                 digCycle(zIsEven, yIsEven)
                 print("Digged block: ", lastPosition.x, lastPosition.y, lastPosition.z)
             end
+
+            -- Move along the Z-axis
             if (zIsEven == yIsEven) then
                 rotateTowardsZ("positive")
                 turtle.dig()
@@ -394,12 +416,20 @@ local function diglogic()
                 turtle.dig()
                 moveNegZ()
             end
+            updatePosition()
+            zIsEven = lastPosition.z % 2 == 0
+            -- Perform digging cycle after moving along Z-axis
             digCycle(zIsEven, yIsEven)
             print("Started a new row")
         end
+
+        -- Move down along Y-axis
         turtle.digDown()
         moveNegY()
         turnRight(2)
+        updatePosition()
+        yIsEven = lastPosition.y % 2 == 0
+        -- Perform digging cycle after moving down along Y-axis
         digCycle(zIsEven, yIsEven)
         print("Started a new layer")
     end
