@@ -83,8 +83,8 @@ for x = 1, #args do
         if dig.getymin() > -skip then
             dig.setymin(-skip)
         end --if
-    end --if
-end   --for
+    end     --if
+end         --for
 
 
 if not lava then -- Block lava around edges of quarry
@@ -187,48 +187,48 @@ local function checkInv()
             dig.dropNotFuel()
             returnFromBase(loc)
         end --if
-    end --if
-end   --function
+    end     --if
+end         --function
 
 
 
 function checkFuel()
-    local a = turtle.getFuelLevel()
-    local b = (zmax + xmax + depth + 1) * 2
-    local c = true
+    -- local a = turtle.getFuelLevel()
+    -- local b = (zmax + xmax + depth + 1) * 2
+    -- local c = true
 
-    while a < b and c do
-        for x = 1, 16 do
-            turtle.select(x)
-            if turtle.refuel(1) then
-                break
-            end --if
-            if x == 16 then
-                c = false
-            end --if
-        end --for
-        a = turtle.getFuelLevel()
-    end --while
+    -- while a < b and c do
+    --     for x = 1, 16 do
+    --         turtle.select(x)
+    --         if turtle.refuel(1) then
+    --             break
+    --         end --if
+    --         if x == 16 then
+    --             c = false
+    --         end --if
+    --     end --for
+    --     a = turtle.getFuelLevel()
+    -- end --while
 
-    if a < b then
-        flex.send("Fuel low, returning to surface",
-            colors.yellow)
-        local loc = gotoBase()
-        turtle.select(1)
-        if dodumps then dig.doDumpDown() end
-        while turtle.suckUp() do sleep(0) end
-        dig.dropNotFuel()
-        dig.refuel(b)
-        flex.send("Fuel aquired!", colors.lightBlue)
-        returnFromBase(loc)
-    end --if
-end  --function
+    -- if a < b then
+    --     flex.send("Fuel low, returning to surface",
+    --         colors.yellow)
+    --     local loc = gotoBase()
+    --     turtle.select(1)
+    --     if dodumps then dig.doDumpDown() end
+    --     while turtle.suckUp() do sleep(0) end
+    --     dig.dropNotFuel()
+    --     dig.refuel(b)
+    --     flex.send("Fuel aquired!", colors.lightBlue)
+    --     returnFromBase(loc)
+    -- end --if
+end --function
 
 local dug = dig.getdug()
 local ydeep = dig.getymin()
 local function checkProgress()
     a = 1000 --report every <a> blocks dug
-    b = 5 --report every <b> meters descended
+    b = 5    --report every <b> meters descended
     if math.floor(dug / a) < math.floor(dig.getdug() / a) then
         flex.send("Dug " .. tostring(dig.getdug()) ..
             " blocks", colors.lightBlue)
@@ -252,7 +252,7 @@ function checkNewLayer()
     else
         dig.setr(dig.getr() % 360)
     end --if
-end  --function
+end     --function
 
 function lavax()
     if dig.getx() == 0 then
@@ -264,7 +264,7 @@ function lavax()
         checkNewLayer()
         dig.blockLava()
     end --if/else
-end   --function
+end     --function
 
 function lavaz()
     if dig.getz() == 0 then
@@ -276,7 +276,7 @@ function lavaz()
         checkNewLayer()
         dig.blockLava()
     end --if/else
-end   --function
+end     --function
 
 function checkLava(n)
     if lava then
@@ -302,14 +302,14 @@ function checkLava(n)
                 dig.left()
                 checkNewLayer()
             end --for
-        end --if
+        end     --if
 
         if n ~= 0 then
             dig.gotor(r)
             checkNewLayer()
         end --if
-    end --if
-end   --function
+    end     --if
+end         --function
 
 function checkAll(n)
     checkNewLayer()
@@ -375,7 +375,7 @@ else
     else
         flex.send("To bedrock!", colors.lightGray)
     end --if/else
-end  --if/else
+end     --if/else
 
 
 while dig.gety() > -skip do
@@ -388,7 +388,7 @@ while dig.gety() > -skip do
         --rs.delete("startup.lua")
         return
     end --if
-end  --while
+end     --while
 
 
 
@@ -423,7 +423,7 @@ while not done and not dig.isStuck() do
         if dig.isStuck() then
             done = true
         end --if
-    end --while (z loop)
+    end     --while (z loop)
 
     if done then break end
 
@@ -445,7 +445,7 @@ while not done and not dig.isStuck() do
         checkAll(0)
         dig.down()
     end --if
-end  --while (cuboid dig loop)
+end     --while (cuboid dig loop)
 
 
 flex.send("Digging completed, returning to surface",
@@ -463,7 +463,7 @@ for x = 1, 16 do
         dig.placeDown()
         break
     end --if
-end  --for
+end     --for
 turtle.select(1)
 
 if dodumps then
